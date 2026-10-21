@@ -36,7 +36,7 @@ public class VoltageCompensator {
     private final long refreshPeriodNanos;
     private final double alpha;
 
-    private double filteredVoltage;
+    private static double filteredVoltage;
     private long lastReadNanos = 0L;
     private boolean initialized = false;
 
@@ -62,7 +62,7 @@ public class VoltageCompensator {
     }
 
     /** Smoothed battery voltage, refreshed at the configured rate. */
-    public double getVoltage() {
+    public double update() {
         long now = System.nanoTime();
         if (!initialized || now - lastReadNanos >= refreshPeriodNanos) {
             double raw = readRaw();
@@ -72,6 +72,12 @@ public class VoltageCompensator {
             }
             lastReadNanos = now;
         }
+        return filteredVoltage;
+    }
+
+    /** Return last calculated voltage. Usable without VoltageCompensator instance. Needs to run {@link update()} separately this time with an instance.*/
+    public static double getVoltage()
+    {
         return filteredVoltage;
     }
 
