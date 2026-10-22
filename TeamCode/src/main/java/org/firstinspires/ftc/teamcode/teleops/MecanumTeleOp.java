@@ -86,7 +86,16 @@ public class MecanumTeleOp extends LinearOpMode {
                     drive.setTargetHeading(Math.PI);
                 }
 
-                if(gamepad1.rightBumperWasPressed())
+                if(gamepad1.right_bumper)
+                {
+                    drive.OverrideInputs(0.0,-1.0,0.0);
+                }
+                else if (gamepad1.left_bumper)
+                {
+                    drive.OverrideInputs(0.0,1.0,0.0);
+                }
+
+                if(gamepad1.dpadUpWasPressed())
                 {
                     drive.UpdatePIDCoefs();
                 }

@@ -56,6 +56,11 @@ public class ChassisSpeeds
         this.omega = omega;
     }
 
+    public ChassisSpeeds copy()
+    {
+        return new ChassisSpeeds(this.vx,this.vy,this.omega);
+    }
+
     @Override
     public String toString() 
     {

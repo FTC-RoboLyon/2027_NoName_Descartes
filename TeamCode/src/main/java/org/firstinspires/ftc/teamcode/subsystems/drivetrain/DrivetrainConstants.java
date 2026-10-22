@@ -37,7 +37,7 @@ public final class DrivetrainConstants
     // false = open-loop setPower (robust, no tuning); true = closed-loop setVelocity (needs encoders).
     public static final boolean USE_CLOSED_LOOP = false;
     public static final double NOMINAL_VOLTAGE = 12.0; // used only for the setVoltage() estimate
-    public static double MANUAL_SETPOINT = 1.0;
+    public static double MANUAL_SETPOINT = 0.12;
 
     // ---- Device names (must match the Control Hub Robot Configuration) ----
     public static final String FRONT_LEFT_NAME = "frontLeft";
@@ -60,9 +60,9 @@ public final class DrivetrainConstants
     public static final double DISTANCE_KI = 0.0;
     public static final double DISTANCE_KD = 0.0;
 
-    public static double HEADING_KP = 3.0;
+    public static double HEADING_KP = 10.0;
     public static double HEADING_KI = 0.0;
-    public static double HEADING_KD = 1.0;
+    public static double HEADING_KD = 0.37;
 
     //static-friction feedforward go to pose
     public static final double STATIC_FRICTION_DISTANCE_M = 0.012;

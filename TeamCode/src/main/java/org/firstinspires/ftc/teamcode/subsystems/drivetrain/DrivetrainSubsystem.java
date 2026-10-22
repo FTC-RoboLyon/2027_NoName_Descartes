@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.subsystems.drivetrain;
 
+import com.seattlesolvers.solverslib.command.SubsystemBase;
+
 import org.firstinspires.ftc.LyonLib.control.PidRBL;
 import org.firstinspires.ftc.LyonLib.drive.DriveIO;
 import org.firstinspires.ftc.LyonLib.kinematics.ChassisSpeeds;
@@ -25,7 +27,7 @@ import java.util.function.DoubleSupplier;
  * <p>A DriveMode state machine (wanted -> system) selects the behaviour. This
  * subsystem does NOT flush the logger — the OpMode flushes once per loop.
  */
-public final class DrivetrainSubsystem
+public final class DrivetrainSubsystem extends SubsystemBase
 {
 
     public enum DriveMode
@@ -51,6 +53,7 @@ public final class DrivetrainSubsystem
     private DriveMode systemMode = DriveMode.DISABLE;
 
     private ChassisSpeeds lastCommanded = new ChassisSpeeds();
+    private ChassisSpeeds overrideInputs;
 
     // Manual axis suppliers, in [-1, 1]. Default to neutral.
     private DoubleSupplier forwardSupplier = () -> 0.0;
@@ -200,6 +203,12 @@ public final class DrivetrainSubsystem
         pathYController.setGains(DrivetrainConstants.PATH_Y_KP, 0.0, 0.0);
     }
 
+    /** Use this function to override all other inputs. Params must be robot centric. */
+    public void OverrideInputs(double forward, double strafe, double omega)
+    {
+        overrideInputs = new ChassisSpeeds(forward,strafe,omega);
+    }
+
 
     public void periodic()
     {
@@ -210,7 +219,18 @@ public final class DrivetrainSubsystem
         inputs.currentPose = localizer.Update(now);
 
         handleStateTransition();
-        ChassisSpeeds output = computeOutput();
+
+        ChassisSpeeds output;
+
+        if (overrideInputs == null)
+        {
+            output = computeOutput();
+        }
+        else
+        {
+            output = overrideInputs.copy();
+            overrideInputs = null;
+        }
 
         io.applyChassisSpeeds(output);
         lastCommanded = output;
@@ -359,8 +379,7 @@ public final class DrivetrainSubsystem
         double vxField = sample.vx + pathXController.calculateWithRealTime(targetPose.xMeters, inputs.currentPose.xMeters, now);
         double vyField = sample.vy + pathYController.calculateWithRealTime(targetPose.yMeters, inputs.currentPose.yMeters, now);
         double omega = sample.omega + headingController.calculateWithRealTime(targetPose.headingRadians,
-                inputs.currentPose.headingRadians,
-                                                                            now);
+                inputs.currentPose.headingRadians, now);
 
         logger.log("Drivetrain/PathFollow/t", t);
         logger.log("Drivetrain/PathFollow/desired", targetPose.toArray());
