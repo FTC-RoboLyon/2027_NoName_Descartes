@@ -153,10 +153,17 @@ public final class DrivetrainSubsystem extends SubsystemBase
         this.activePath = path;
     }
 
-    /** Set a heading target for FRICTION_NEGLECTED. Switch the wanted mode to PATH_FOLLOWING separately.*/
+    /** Set a heading target for FRICTION_NEGLECTED. Switch the wanted mode to PATH_FOLLOWING separately. */
     public void setTargetHeading(double targetHeading)
     {
         this.targetHeading = targetHeading;
+    }
+
+    /** Add a given angle value in rad (can be negative) to the current heading target of FRICTION_NEGELECTED DriveMode.
+     *  Switch the wanted mode to PATH_FOLLOWING separately. */
+    public void incrementHeadingTarget(double value)
+    {
+        targetHeading += value;
     }
 
     /** Latest authoritative (fused) field pose. */
@@ -229,6 +236,10 @@ public final class DrivetrainSubsystem extends SubsystemBase
         else
         {
             output = overrideInputs.copy();
+            if(output.omega == 0.0)
+            {
+                output.omega = headingController.calculateWithRealTime(targetHeading, inputs.currentPose.headingRadians, now);
+            }
             overrideInputs = null;
         }
 
@@ -389,7 +400,7 @@ public final class DrivetrainSubsystem extends SubsystemBase
         return fieldToRobot(vxField, vyField, omega, inputs.currentPose.headingRadians);
     }
 
-    public ChassisSpeeds frictionNeglected()
+    private ChassisSpeeds frictionNeglected()
     {
         double vxField = shape(forwardSupplier.getAsDouble()) * DrivetrainConstants.MAX_LINEAR_SPEED_MPS;
         double vyField = shape(leftSupplier.getAsDouble()) * DrivetrainConstants.MAX_LINEAR_SPEED_MPS;

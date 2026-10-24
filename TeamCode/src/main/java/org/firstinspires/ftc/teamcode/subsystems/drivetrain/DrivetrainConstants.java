@@ -106,9 +106,9 @@ public final class DrivetrainConstants
     public static final Pose2d MODEL_PROCESS_NOISE = new Pose2d(0.01,0.01,Math.PI/180); //TUNEME
 
     // ---- Wheel Coefs ----
-    public static double BACK_LEFT_COEF = 0.85;
-    public static double FRONT_LEFT_COEF = 0.85;
-    public static double BACK_RIGHT_COEF = 0.85;
+    public static double BACK_LEFT_COEF = 1.0;
+    public static double FRONT_LEFT_COEF = 1.0;
+    public static double BACK_RIGHT_COEF = 1.0;
     public static double FRONT_RIGHT_COEF = 1.0;
 }
 

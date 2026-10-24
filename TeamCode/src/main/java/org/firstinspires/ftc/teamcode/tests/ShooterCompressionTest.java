@@ -17,12 +17,13 @@ import java.util.List;
 @Config
 public class ShooterCompressionTest extends OpMode {
     private DcMotorEx shooterMotor;
-
+    private DcMotorEx clode;
 
 
     private boolean isEnabled = false;
 
     private double motorPower = 0.0;
+    public static double clodePower = 0.0;
 
     private final double GEAR_RATIO = 4.0/3.0;
 
@@ -50,7 +51,12 @@ public class ShooterCompressionTest extends OpMode {
         shooterMotor = hardwareMap.get(DcMotorEx.class,"shooterMotor");
         shooterMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         shooterMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        shooterMotor.setDirection(DcMotor.Direction.FORWARD);
+        shooterMotor.setDirection(DcMotor.Direction.REVERSE);
+
+        clode = hardwareMap.get(DcMotorEx.class,"clode");
+        clode.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        clode.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        clode.setDirection(DcMotor.Direction.FORWARD);
 
         voltageSensor = hardwareMap.get(VoltageSensor.class,("Control Hub"));
 
@@ -106,6 +112,8 @@ public class ShooterCompressionTest extends OpMode {
 
         motorPower = motorPower*batteryVoltage/11.5;
         shooterMotor.setPower(motorPower);
+
+        clode.setPower(clodePower*batteryVoltage/11.5);
 
         telemetry.addData("motor speed (rpm)", motorVelocity);
         telemetry.addData("flywheel speed (rpm)", flywheelVelocity);
