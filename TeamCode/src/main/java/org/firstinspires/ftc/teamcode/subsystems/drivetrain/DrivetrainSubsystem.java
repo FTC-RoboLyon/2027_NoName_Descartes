@@ -11,6 +11,7 @@ import org.firstinspires.ftc.LyonLib.logging.NoOpLogger;
 import org.firstinspires.ftc.LyonLib.logging.RealtimeLogger;
 import org.firstinspires.ftc.LyonLib.trajectory.HolonomicTrajectory;
 import org.firstinspires.ftc.LyonLib.utils.UtilsRBL;
+
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 import java.util.function.DoubleSupplier;
@@ -53,7 +54,7 @@ public final class DrivetrainSubsystem extends SubsystemBase
     private DriveMode systemMode = DriveMode.DISABLE;
 
     private ChassisSpeeds lastCommanded = new ChassisSpeeds();
-    private ChassisSpeeds overrideInputs;
+    private ChassisSpeeds overridenInputs;
 
     // Manual axis suppliers, in [-1, 1]. Default to neutral.
     private DoubleSupplier forwardSupplier = () -> 0.0;
@@ -79,21 +80,22 @@ public final class DrivetrainSubsystem extends SubsystemBase
     // Target for GO_TO_POSE.
     private Pose2d targetPose = new Pose2d();
 
-    // Target for FRICTION_NEGLECTED
+    // Target for FRICTION_NEGLECTED (also used with inputs override)
     private double targetHeading; //in rad
 
     // Active trajectory for PATH_FOLLOWING.
     private HolonomicTrajectory activePath = null;
     private double pathStartTimeSeconds = 0.0;
 
+    private boolean previousInputsOverriden = false;
 
     /** no Logging + fused pose from the RobotLocalizer (recommended). */
-    public DrivetrainSubsystem(DriveIO io, RobotLocalizer localizer, Telemetry telemetry) {
-        this(io, localizer, new NoOpLogger(), telemetry);
+    public DrivetrainSubsystem(DriveIO io, RobotLocalizer localizer, Pose2d InitPos, Telemetry telemetry) {
+        this(io, localizer, InitPos, new NoOpLogger(), telemetry);
     }
 
     /** Logging + fused pose from the RobotLocalizer (recommended). */
-    public DrivetrainSubsystem(DriveIO io, RobotLocalizer localizer, RealtimeLogger logger, Telemetry telemetry)
+    public DrivetrainSubsystem(DriveIO io, RobotLocalizer localizer, Pose2d InitPos, RealtimeLogger logger, Telemetry telemetry)
     {
         this.io = io;
         this.localizer = localizer;
@@ -101,6 +103,7 @@ public final class DrivetrainSubsystem extends SubsystemBase
         this.telemetry = telemetry;
 
         localizer.SetDrivetrainParameters(io.getDrivetrainKinematics(), io.getWheelInputs(), DrivetrainConstants.MODEL_PROCESS_NOISE);
+        localizer.Init(InitPos);
 
         // The distance PID output is a speed magnitude in m/s.
         distanceController.setOutputLimits(
@@ -164,6 +167,7 @@ public final class DrivetrainSubsystem extends SubsystemBase
     public void incrementHeadingTarget(double value)
     {
         targetHeading += value;
+        targetHeading = UtilsRBL.wrapNegPiToPi(targetHeading);
     }
 
     /** Latest authoritative (fused) field pose. */
@@ -210,10 +214,17 @@ public final class DrivetrainSubsystem extends SubsystemBase
         pathYController.setGains(DrivetrainConstants.PATH_Y_KP, 0.0, 0.0);
     }
 
-    /** Use this function to override all other inputs. Params must be robot centric. */
+    /** Use this function to override all other inputs. Params must be robot centric. If omega power is null the robot will maintain heading with a PID controller.*/
     public void OverrideInputs(double forward, double strafe, double omega)
     {
-        overrideInputs = new ChassisSpeeds(forward,strafe,omega);
+        overridenInputs = new ChassisSpeeds(forward,strafe,omega);
+        
+        if (!previousInputsOverriden) 
+        {
+            targetHeading = UtilsRBL.wrapNegPiToPi(inputs.currentPose.headingRadians);
+        }
+
+        previousInputsOverriden = true;
     }
 
 
@@ -229,18 +240,19 @@ public final class DrivetrainSubsystem extends SubsystemBase
 
         ChassisSpeeds output;
 
-        if (overrideInputs == null)
+        if (overridenInputs == null)
         {
             output = computeOutput();
+            previousInputsOverriden = false;
         }
         else
         {
-            output = overrideInputs.copy();
+            output = overridenInputs.copy();
             if(output.omega == 0.0)
             {
-                output.omega = headingController.calculateWithRealTime(targetHeading, inputs.currentPose.headingRadians, now);
+                output.omega = headingController.calculateWithRealTime(targetHeading, UtilsRBL.wrapNegPiToPi(inputs.currentPose.headingRadians), now);
             }
-            overrideInputs = null;
+            overridenInputs = null;
         }
 
         io.applyChassisSpeeds(output);
@@ -285,7 +297,7 @@ public final class DrivetrainSubsystem extends SubsystemBase
 
             case FRICTION_NEGLECTED:
             {
-                targetHeading = inputs.currentPose.headingRadians;
+                targetHeading = UtilsRBL.wrapNegPiToPi(inputs.currentPose.headingRadians);
                 headingController.reset(targetHeading);
                 break;
             }
@@ -360,7 +372,7 @@ public final class DrivetrainSubsystem extends SubsystemBase
         double vyField = velocityOutput * Math.sin(directionOfTravel);
 
         // Heading handled by its own continuous PID.
-        double omega = headingController.calculateWithRealTime(targetPose.headingRadians, inputs.currentPose.headingRadians, now);
+        double omega = headingController.calculateWithRealTime(targetPose.headingRadians, UtilsRBL.wrapNegPiToPi(inputs.currentPose.headingRadians), now);
 
         logger.log("Drivetrain/DriveToPoint/linearDistance", linearDistance);
         logger.log("Drivetrain/DriveToPoint/velocityOutput", velocityOutput);
@@ -390,7 +402,7 @@ public final class DrivetrainSubsystem extends SubsystemBase
         double vxField = sample.vx + pathXController.calculateWithRealTime(targetPose.xMeters, inputs.currentPose.xMeters, now);
         double vyField = sample.vy + pathYController.calculateWithRealTime(targetPose.yMeters, inputs.currentPose.yMeters, now);
         double omega = sample.omega + headingController.calculateWithRealTime(targetPose.headingRadians,
-                inputs.currentPose.headingRadians, now);
+                UtilsRBL.wrapNegPiToPi(inputs.currentPose.headingRadians), now);
 
         logger.log("Drivetrain/PathFollow/t", t);
         logger.log("Drivetrain/PathFollow/desired", targetPose.toArray());
@@ -404,8 +416,8 @@ public final class DrivetrainSubsystem extends SubsystemBase
     {
         double vxField = shape(forwardSupplier.getAsDouble()) * DrivetrainConstants.MAX_LINEAR_SPEED_MPS;
         double vyField = shape(leftSupplier.getAsDouble()) * DrivetrainConstants.MAX_LINEAR_SPEED_MPS;
-        targetHeading += shape(ccwSupplier.getAsDouble())*DrivetrainConstants.MANUAL_SETPOINT;
-        double omega = headingController.calculateWithRealTime(targetHeading, inputs.currentPose.headingRadians, now);
+        targetHeading = UtilsRBL.wrapNegPiToPi(targetHeading + shape(ccwSupplier.getAsDouble())*DrivetrainConstants.MANUAL_SETPOINT);
+        double omega = headingController.calculateWithRealTime(targetHeading, UtilsRBL.wrapNegPiToPi(inputs.currentPose.headingRadians), now);
         return fieldToRobot(vxField, vyField, omega, inputs.currentPose.headingRadians);
     }
 

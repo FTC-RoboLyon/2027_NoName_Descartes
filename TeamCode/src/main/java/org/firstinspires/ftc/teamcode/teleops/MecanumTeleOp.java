@@ -48,7 +48,7 @@ public class MecanumTeleOp extends LinearOpMode {
 
         RobotLocalizer localizer = getLocalizer(logger);
 
-        DrivetrainSubsystem drive = new DrivetrainSubsystem(io, localizer, logger, telemetry);
+        DrivetrainSubsystem drive = new DrivetrainSubsystem(io, localizer, new Pose2d(), logger, telemetry);
         drive.configureManualSuppliers(
                 () -> -gamepad1.left_stick_y,   // avant
                 () -> -gamepad1.left_stick_x,   // strafe gauche

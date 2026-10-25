@@ -5,17 +5,21 @@ import com.seattlesolvers.solverslib.command.SubsystemBase;
 
 import org.firstinspires.ftc.LyonLib.control.ControlMode;
 
+import java.util.function.DoubleSupplier;
+
 public class IntakeSubsystem extends SubsystemBase {
     private IntakeIO intakeIO;
 
+    DoubleSupplier powerSupplier;
+
     private double motorPower = 0.0;
-    private enum WantedState
+    public enum WantedState
     {
         STAND_BY,
         INTAKE
     }
 
-    private enum SystemState
+    public enum SystemState
     {
         IDLE,
         INTAKING
@@ -25,9 +29,24 @@ public class IntakeSubsystem extends SubsystemBase {
     private SystemState systemState =  SystemState.IDLE;
     private ControlMode controlMode = ControlMode.DISABLED;
 
-    public IntakeSubsystem(HardwareMap hmap)
+    public IntakeSubsystem(HardwareMap hmap, boolean isFrontIntake)
     {
-        intakeIO = new IntakeIO(hmap);
+        intakeIO = new IntakeIO(hmap, isFrontIntake);
+    }
+
+    public void SetControlMode (ControlMode mode)
+    {
+        this.controlMode = mode;
+    }
+
+    public void SetWantedState(WantedState wantedState)
+    {
+        this.wantedState = wantedState;
+    }
+
+    public void ConfigureManualSupplier(DoubleSupplier powerSupplier)
+    {
+        this.powerSupplier = powerSupplier;
     }
 
     @Override
@@ -59,6 +78,13 @@ public class IntakeSubsystem extends SubsystemBase {
                         //TODO
                         break;
                 }
+
+            case MANUAL_VOLTAGE:
+                if (powerSupplier != null)
+                {
+                    motorPower = powerSupplier.getAsDouble();
+                }
+                break;
 
             default:
                 //TODO
