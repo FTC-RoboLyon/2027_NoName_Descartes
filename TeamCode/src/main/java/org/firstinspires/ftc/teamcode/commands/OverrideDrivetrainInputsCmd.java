@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.commands;
 
 import com.seattlesolvers.solverslib.command.CommandBase;
 
+import org.firstinspires.ftc.LyonLib.utils.UtilsRBL;
 import org.firstinspires.ftc.teamcode.subsystems.drivetrain.DrivetrainSubsystem;
 
 import java.util.function.BooleanSupplier;
@@ -26,6 +27,10 @@ public class OverrideDrivetrainInputsCmd extends CommandBase {
     @Override
     public void execute()
     {
+        if(Math.abs(UtilsRBL.wrapNegPiToPi(drivetrain.getCurrentPose().headingRadians)) > Math.PI/2.0)
+        {
+            strafe = -strafe;
+        }
         drivetrain.OverrideInputs(fwd, strafe, rotation);
     }
 }

@@ -9,7 +9,7 @@ public final class intakeConstants {
     public final static ControlMode EmergencyControlMode = ControlMode.MANUAL_DUTY_CYCLE;
 
     // --- Front Intake Motor ---
-    public final static String FRONT_MOTOR_NAME = "isFrontIntakeMotor";
+    public final static String FRONT_MOTOR_NAME = "frontIntakeMotor";
     public final static boolean FRONT_MOTOR_REVERSED = true;
 
     // --- Back Intake Motor ---

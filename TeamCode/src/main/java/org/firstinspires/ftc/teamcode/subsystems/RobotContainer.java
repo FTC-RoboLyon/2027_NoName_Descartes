@@ -9,6 +9,7 @@ import com.seattlesolvers.solverslib.gamepad.GamepadKeys;
 
 import org.firstinspires.ftc.LyonLib.kinematics.Pose2d;
 import org.firstinspires.ftc.LyonLib.localization.MecanumLocalizer;
+import org.firstinspires.ftc.LyonLib.utils.VoltageCompensator;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 import org.firstinspires.ftc.LyonLib.drive.DriveIO;
@@ -50,6 +51,7 @@ public class RobotContainer{
         drivetrain = new DrivetrainSubsystem(getDrivetrainIO(hmap), getLocalizer(hmap), new Pose2d(),logger ,telemetry);
         frontIntake = new IntakeSubsystem(hmap, true);
         backIntake = new IntakeSubsystem(hmap, false);
+        voltageCompensator = new VoltageCompensator(hmap);
 
         this.robotMode = robotMode;
 
@@ -67,6 +69,7 @@ public class RobotContainer{
         drivetrain = new DrivetrainSubsystem(getDrivetrainIO(hmap), getLocalizer(hmap), new Pose2d(),logger ,telemetry); //TODO : add starting poses
         frontIntake = new IntakeSubsystem(hmap, true);
         backIntake = new IntakeSubsystem(hmap, false);
+        voltageCompensator = new VoltageCompensator(hmap);
 
         this.robotMode = robotMode;
     }
@@ -91,6 +94,7 @@ public class RobotContainer{
     public void periodic()
     {
         CommandScheduler.getInstance().run();
+        voltageCompensator.update();
         logger.flush();
     }
 
@@ -142,6 +146,7 @@ public class RobotContainer{
 
     public DrivetrainSubsystem drivetrain;
     public IntakeSubsystem frontIntake, backIntake;
+    public VoltageCompensator voltageCompensator;
 
     // --- IO getters ---
     private DriveIO getDrivetrainIO(HardwareMap hmap)
