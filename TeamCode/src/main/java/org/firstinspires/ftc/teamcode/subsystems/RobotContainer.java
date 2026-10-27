@@ -7,6 +7,7 @@ import com.seattlesolvers.solverslib.command.button.GamepadButton;
 import com.seattlesolvers.solverslib.gamepad.GamepadEx;
 import com.seattlesolvers.solverslib.gamepad.GamepadKeys;
 
+import org.firstinspires.ftc.LyonLib.control.ControlMode;
 import org.firstinspires.ftc.LyonLib.kinematics.Pose2d;
 import org.firstinspires.ftc.LyonLib.localization.MecanumLocalizer;
 import org.firstinspires.ftc.LyonLib.utils.VoltageCompensator;
@@ -79,6 +80,9 @@ public class RobotContainer{
         if (robotMode == RobotMode.TELEOP_BLUE || robotMode == RobotMode.TELEOP_RED)
         {
             drivetrain.setWantedMode(DrivetrainSubsystem.DriveMode.FRICTION_NEGLECTED);
+            frontIntake.SetControlMode(ControlMode.MANUAL_VOLTAGE);
+            backIntake.SetControlMode(ControlMode.MANUAL_VOLTAGE);
+            BindCommands();
         }
         else
         {

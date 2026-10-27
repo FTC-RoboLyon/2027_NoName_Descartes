@@ -10,11 +10,11 @@ public final class intakeConstants {
 
     // --- Front Intake Motor ---
     public final static String FRONT_MOTOR_NAME = "frontIntakeMotor";
-    public final static boolean FRONT_MOTOR_REVERSED = true;
+    public final static boolean FRONT_MOTOR_REVERSED = false;
 
     // --- Back Intake Motor ---
     public final static String BACK_MOTOR_NAME = "backIntakeMotor";
-    public final static boolean BACK_MOTOR_REVERSED = true;
+    public final static boolean BACK_MOTOR_REVERSED = false;
 
     // --- Both Motors ---
     public final static DcMotor.ZeroPowerBehavior INTAKE_ZERO_POWER_BEHAVIOR = DcMotor.ZeroPowerBehavior.FLOAT;

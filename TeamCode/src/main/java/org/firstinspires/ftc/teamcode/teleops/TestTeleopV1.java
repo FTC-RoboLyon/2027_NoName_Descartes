@@ -1,11 +1,15 @@
 package org.firstinspires.ftc.teamcode.teleops;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import com.qualcomm.robotcore.hardware.CRServoImpl;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.seattlesolvers.solverslib.gamepad.GamepadEx;
 import com.qualcomm.robotcore.hardware.Servo;
 
@@ -13,6 +17,7 @@ import org.firstinspires.ftc.teamcode.subsystems.RobotContainer;
 
 
 @TeleOp
+@Config
 public class TestTeleopV1 extends OpMode{
     RobotContainer robotContainer;
 
@@ -21,11 +26,11 @@ public class TestTeleopV1 extends OpMode{
     private double servoPower;
 
     // --- Shooter ---
-    private DcMotor shooterFrontMotor, shooterBackMotor;
+    private DcMotorEx shooterFrontMotor, shooterBackMotor;
     private double shooterPower;
     private Servo jspCommentTappeler, lePoteDeLautre; //left, right
-    private final double leftPollenPos = 0.45, leftNectarPos = 0.75;
-    private final double rightPollenPos = 0.55, rightNectarPos = 0.25;
+    public static double leftPollenPos = 0.75, leftNectarPos = 0.3;
+    public static double rightPollenPos = 0.25, rightNectarPos = 0.5;
     private boolean shootingPollen = true;
 
     @Override
@@ -38,6 +43,8 @@ public class TestTeleopV1 extends OpMode{
 
         initTurret();
         initShooter();
+
+        telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
     }
 
     @Override
@@ -53,6 +60,9 @@ public class TestTeleopV1 extends OpMode{
 
         turret();
         shooter();
+
+        telemetry.addData("ShooterMotorRPM", shooterFrontMotor.getVelocity());
+        telemetry.update();
     }
 
     @Override
@@ -75,12 +85,12 @@ public class TestTeleopV1 extends OpMode{
         shooterFrontMotor = hardwareMap.get(DcMotorEx.class,"shooterMotor");
         shooterFrontMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         shooterFrontMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        shooterFrontMotor.setDirection(DcMotor.Direction.REVERSE);
+        shooterFrontMotor.setDirection(DcMotor.Direction.FORWARD);
 
         shooterBackMotor = hardwareMap.get(DcMotorEx.class,"clode");
         shooterBackMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         shooterBackMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        shooterBackMotor.setDirection(DcMotor.Direction.FORWARD);
+        shooterBackMotor.setDirection(DcMotor.Direction.REVERSE);
 
         jspCommentTappeler = hardwareMap.get(Servo.class, "trucDuShooter");
         lePoteDeLautre = hardwareMap.get(Servo.class, "machinDuShooter");
@@ -99,13 +109,9 @@ public class TestTeleopV1 extends OpMode{
         shooterBackMotor.setPower(shooterPower);
         shooterFrontMotor.setPower(shooterPower);
 
-        if(gamepad2.triangle)
+        if(gamepad2.triangleWasPressed())
         {
-            shootingPollen = false;
-        }
-        else if (gamepad2.circle)
-        {
-            shootingPollen = false;
+            shootingPollen = !shootingPollen;
         }
 
         if(shootingPollen)

@@ -218,8 +218,8 @@ public final class DrivetrainSubsystem extends SubsystemBase
     public void OverrideInputs(double forward, double strafe, double omega)
     {
         overridenInputs = new ChassisSpeeds(forward,strafe,omega);
-        
-        if (!previousInputsOverriden) 
+
+        if (!previousInputsOverriden)
         {
             targetHeading = UtilsRBL.wrapNegPiToPi(inputs.currentPose.headingRadians);
         }
@@ -265,7 +265,7 @@ public final class DrivetrainSubsystem extends SubsystemBase
         DriveTelemetry.logInputs(logger, inputs);
 
         telemetry.addData("Target",targetHeading);
-        telemetry.addData("Heading", inputs.currentPose.headingRadians);
+        telemetry.addData("Heading", UtilsRBL.wrapNegPiToPi(inputs.currentPose.headingRadians));
     }
 
 
@@ -289,7 +289,7 @@ public final class DrivetrainSubsystem extends SubsystemBase
             {
                 // Reset the controllers so there's no derivative kick / stale integral.
                 double distance = Math.hypot(targetPose.xMeters - inputs.currentPose.xMeters,
-                                                targetPose.yMeters - inputs.currentPose.yMeters);
+                        targetPose.yMeters - inputs.currentPose.yMeters);
                 distanceController.reset(distance);
                 headingController.reset(inputs.currentPose.headingRadians);
                 break;
