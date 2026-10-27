@@ -24,7 +24,8 @@ public enum ControlMode {
     POSITION_DUTYCYCLE_PID,     // Position control (PID + duty cycle output)
     VELOCITY_VOLTAGE_PID,       // Velocity control (PID + volts output)
     VELOCITY_DUTYCYCLE_PID,     // Velocity control (PID + duty cycle output)
-    MODEL_CONTROLLED,           // Model-based control (dynamic system model + PID feedback) 
+    VELOCITY_DUTYCYCLE_PID_FF,     // Velocity control (PID + kS/kV/kA + duty cycle output)
+    MODEL_CONTROLLED,           // Model-based control (dynamic system model + PID feedback)
 
     // ----- Open-loop control (feedforward or direct) -----
     VELOCITY_VOLTAGE_FF,        // Open-loop velocity control (kS/kV/kA model, output in volts)

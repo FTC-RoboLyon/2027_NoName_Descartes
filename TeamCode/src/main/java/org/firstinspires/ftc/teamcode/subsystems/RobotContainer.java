@@ -20,13 +20,17 @@ import org.firstinspires.ftc.LyonLib.logging.WpilogFileLogger;
 import org.firstinspires.ftc.LyonLib.drive.MecanumDriveIO;
 
 import org.firstinspires.ftc.teamcode.commands.ChangeHeadingTargetCmd;
+import org.firstinspires.ftc.teamcode.commands.ChangeTurretTarget;
 import org.firstinspires.ftc.teamcode.commands.OverrideDrivetrainInputsCmd;
+import org.firstinspires.ftc.teamcode.subsystems.ShooterParametersCalculator.ShooterParametersCalculator;
 import org.firstinspires.ftc.teamcode.subsystems.drivetrain.DcMotorWheelIO;
 import org.firstinspires.ftc.teamcode.subsystems.drivetrain.DrivetrainSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.drivetrain.DrivetrainConstants;
 import org.firstinspires.ftc.teamcode.subsystems.intake.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.localization.OTOS;
 import org.firstinspires.ftc.teamcode.subsystems.localization.OdometryWithPinpoint;
+import org.firstinspires.ftc.teamcode.subsystems.shooter.ShooterSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.turret.TurretSubsystem;
 
 
 public class RobotContainer{
@@ -52,7 +56,14 @@ public class RobotContainer{
         drivetrain = new DrivetrainSubsystem(getDrivetrainIO(hmap), getLocalizer(hmap), new Pose2d(),logger ,telemetry);
         frontIntake = new IntakeSubsystem(hmap, true);
         backIntake = new IntakeSubsystem(hmap, false);
+
+        shooterParametersCalculator = new ShooterParametersCalculator(()-> drivetrain.getCurrentPose(), telemetry);
+        turret = new TurretSubsystem(hmap, telemetry, shooterParametersCalculator);
+        shooter = new ShooterSubsystem(hmap, telemetry, shooterParametersCalculator);
+
         voltageCompensator = new VoltageCompensator(hmap);
+
+        CommandScheduler.getInstance().registerSubsystem(turret, shooter);
 
         this.robotMode = robotMode;
 
@@ -88,22 +99,29 @@ public class RobotContainer{
         {
             //TODO : choose for auto;
         }
+
+        turret.setWantedState(TurretSubsystem.WantedState.STAND_BY);
+        shooter.setShooterControlMode(ControlMode.VELOCITY_DUTYCYCLE_PID_FF);
     }
 
     public void start()
     {
         drivetrain.start();
+        shooter.start();
+        turret.resetTurret();
     }
 
     public void periodic()
     {
         CommandScheduler.getInstance().run();
         voltageCompensator.update();
+        shooterParametersCalculator.update();
         logger.flush();
     }
 
     public void end()
     {
+        shooter.setShooterControlMode(ControlMode.DISABLED);
         resetCommands();
         logger.close();
     }
@@ -144,12 +162,25 @@ public class RobotContainer{
         Button LEFT_DASH = new GamepadButton(AlexisGamepad, Constants.LEFT_DASH_BUTTON)
                 .whileHeld(new OverrideDrivetrainInputsCmd(drivetrain,0.0,1.0,0.0),
                         AlexisGamepad.getButton(Constants.RIGHT_DASH_BUTTON));
+
+        Button TRACK_RED_PUBLIC_CELL = new GamepadButton(VictorGamepad, Constants.TRACK_RED_PUBLIC_CELL)
+                .whenPressed(new ChangeTurretTarget(turret, TurretSubsystem.WantedState.TRACK_BLUE_PUBLIC_CELL));
+
+        Button TRACK_BLUE_OPPOSITE_CELL = new GamepadButton(VictorGamepad, Constants.TRACK_BLUE_OPPOSITE_CELL)
+                .whenPressed(new ChangeTurretTarget(turret, TurretSubsystem.WantedState.TRACK_BLUE_OPPOSITE_CELL));
+
+        Button STOP_TURRET = new GamepadButton(VictorGamepad, Constants.STOP_TURRET)
+                .whenPressed(new ChangeTurretTarget(turret, TurretSubsystem.WantedState.STAND_BY));
+
     }
 
     // --- Subsystems ---
 
     public DrivetrainSubsystem drivetrain;
     public IntakeSubsystem frontIntake, backIntake;
+    private TurretSubsystem turret;
+    private ShooterSubsystem shooter;
+    private ShooterParametersCalculator shooterParametersCalculator;
     public VoltageCompensator voltageCompensator;
 
     // --- IO getters ---

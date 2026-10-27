@@ -13,6 +13,10 @@ public class Constants {
     public static final GamepadKeys.Button RIGHT_DASH_BUTTON = GamepadKeys.Button.RIGHT_BUMPER;
     public static final GamepadKeys.Button LEFT_DASH_BUTTON = GamepadKeys.Button.LEFT_BUMPER;
 
+    //--- Buttons Gamepad 2 ---
+    public static final GamepadKeys.Button TRACK_RED_PUBLIC_CELL = GamepadKeys.Button.LEFT_BUMPER;
+    public static final GamepadKeys.Button TRACK_BLUE_OPPOSITE_CELL = GamepadKeys.Button.RIGHT_BUMPER;
+    public static final GamepadKeys.Button STOP_TURRET = GamepadKeys.Button.TRIANGLE;
     //--- Poses ---
     public static final Pose2d BLUE_STARTING_POS = new Pose2d(0.0,0.0,0.0);
     public static final Pose2d RED_STARTING_POS = new Pose2d(0.0,0.0,0.0);

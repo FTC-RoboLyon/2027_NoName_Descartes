@@ -9,7 +9,6 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.seattlesolvers.solverslib.command.CommandScheduler;
 import com.seattlesolvers.solverslib.command.InstantCommand;
-import com.seattlesolvers.solverslib.command.Robot;
 import com.seattlesolvers.solverslib.gamepad.GamepadEx;
 import com.seattlesolvers.solverslib.gamepad.GamepadKeys;
 
@@ -20,9 +19,9 @@ import org.firstinspires.ftc.LyonLib.kinematics.Pose2d;
 import org.firstinspires.ftc.LyonLib.localization.MecanumLocalizer;
 import org.firstinspires.ftc.LyonLib.localization.RobotLocalizer;
 import org.firstinspires.ftc.LyonLib.logging.RealtimeLogger;
-import org.firstinspires.ftc.LyonLib.logging.WpilogFileLogger;
 import org.firstinspires.ftc.LyonLib.utils.VoltageCompensator;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.subsystems.ShooterParametersCalculator.ShooterParametersCalculator;
 import org.firstinspires.ftc.teamcode.subsystems.turret.TurretConstants;
 import org.firstinspires.ftc.teamcode.subsystems.turret.TurretSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.drivetrain.DcMotorWheelIO;
@@ -71,7 +70,7 @@ public class miniRobot {
         alliance = alliance1;
         this.telemetry = telemetry;
 
-        turret = new TurretSubsystem(hmap, this, ()-> posRobot);
+        turret = new TurretSubsystem(hmap, telemetry, new ShooterParametersCalculator(()-> posRobot, telemetry));
 
         voltageCompensator = new VoltageCompensator(hmap);
         CommandScheduler.getInstance().registerSubsystem(turret);

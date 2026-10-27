@@ -26,8 +26,9 @@ public class TurretConstants {
     public static double hallSensorMinWhenMagnet = 1; //TUNEME in voltage
     public static double hallSensorTolerance = 1; //TUNEME in voltage
 
+    @Deprecated
     public final static double TICKS_PER_DEGREES = (double) 32768 /405;
-    public final static double TICKS_PER_RADIANT = (double) 1048576/(72 * Math.PI);
+    public final static double TICKS_PER_RADIANT = (double) 1048576/(70 * Math.PI);
 
     public final static double TURRET_NOMINAL_VOLTAGE = 11.5;
 
