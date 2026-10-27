@@ -8,14 +8,14 @@ import org.firstinspires.ftc.LyonLib.utils.VoltageCompensator;
 public class IntakeIO {
     private DcMotor intakeMotor;
 
-    public IntakeIO(HardwareMap hmap)
+    public IntakeIO(HardwareMap hmap, boolean isFrontIntake)
     {
-        intakeMotor = hmap.get(DcMotor.class, intakeConstants.MOTOR_NAME);
+        intakeMotor = hmap.get(DcMotor.class, isFrontIntake? intakeConstants.FRONT_MOTOR_NAME : intakeConstants.BACK_MOTOR_NAME);
 
         intakeMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         intakeMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        intakeMotor.setDirection(intakeConstants.MOTOR_REVERSED? DcMotor.Direction.REVERSE : DcMotor.Direction.FORWARD);
-        intakeMotor.setZeroPowerBehavior(intakeConstants.ZERO_POWER_BEHAVIOR);
+        intakeMotor.setDirection(isFrontIntake ? (intakeConstants.FRONT_MOTOR_REVERSED? DcMotor.Direction.REVERSE : DcMotor.Direction.FORWARD) : (intakeConstants.BACK_MOTOR_REVERSED? DcMotor.Direction.REVERSE : DcMotor.Direction.FORWARD));
+        intakeMotor.setZeroPowerBehavior(intakeConstants.INTAKE_ZERO_POWER_BEHAVIOR);
     }
     public void SetPower(double voltage)
     {

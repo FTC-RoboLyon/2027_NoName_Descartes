@@ -16,7 +16,7 @@ public class MainTeleop extends OpMode{
     public void init()
     {
         robotContainer = new RobotContainer(hardwareMap, telemetry,
-                new GamepadEx(gamepad1), new GamepadEx(gamepad2));
+                new GamepadEx(gamepad1), new GamepadEx(gamepad2), RobotContainer.RobotMode.TELEOP_RED);
 
         robotContainer.init();
     }
