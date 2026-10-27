@@ -1,8 +1,6 @@
 package org.firstinspires.ftc.teamcode.subsystems.turret;
 
 import com.acmerobotics.dashboard.config.Config;
-import com.qualcomm.hardware.lynx.LynxNackException;
-import com.qualcomm.robotcore.exception.RobotCoreException;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.seattlesolvers.solverslib.command.SubsystemBase;
@@ -10,23 +8,20 @@ import com.seattlesolvers.solverslib.command.SubsystemBase;
 import org.firstinspires.ftc.LyonLib.control.PidRBL;
 import org.firstinspires.ftc.LyonLib.kinematics.Pose2d;
 import org.firstinspires.ftc.LyonLib.utils.UtilsRBL;
-import org.firstinspires.ftc.teamcode.tests.miniRobot;
-import org.firstinspires.ftc.teamcode.subsystems.turret.TurretConstants;
-import org.firstinspires.ftc.teamcode.subsystems.turret.TurretIO;
-
-import java.util.function.Supplier;
+import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.subsystems.ShooterParametersCalculator.ShooterParametersCalculator;
 
 @Config
 public class TurretSubsystem extends SubsystemBase {
 
-    private miniRobot robot;
+    private Telemetry telemetry;
 
     private ElapsedTime timer;
     private Pose2d targetPos = new Pose2d();
     private double targetAngle = 0.0;
     private PidRBL pidTurret;
     private TurretIO turretIO;
-    private Supplier<Pose2d> getRobotPos;
+    private ShooterParametersCalculator parametersCalculator;
 
     private double actualTime = 0.0;
     boolean isInit = true;
@@ -87,11 +82,11 @@ public class TurretSubsystem extends SubsystemBase {
 
     public PidRBL getPidTurret(){return pidTurret;}
 
-    public TurretSubsystem(HardwareMap hmap, miniRobot robot, Supplier<Pose2d> getPos){
+    public TurretSubsystem(HardwareMap hmap, Telemetry telemetry,
+                           ShooterParametersCalculator parametersCalculator){
 
-        getRobotPos = getPos;
-
-        this.robot = robot;
+        this.parametersCalculator = parametersCalculator;
+        this.telemetry = telemetry;
 
         turretIO = new TurretIO(hmap);
 
@@ -143,49 +138,49 @@ public class TurretSubsystem extends SubsystemBase {
                 case SEARCHING_BLUE_PUBLIC_CELL:
                 case ALIGNED_WITH_BLUE_PUBLIC_CELL:
                     pidTurret.setSetpoint(
-                            calculateTargetRadiantWithPosition(TurretConstants.bluePublicCellePos) * TurretConstants.TICKS_PER_RADIANT
+                            parametersCalculator.getTurretRadiantTargetWithTargetPosition(TurretConstants.bluePublicCellePos) * TurretConstants.TICKS_PER_RADIANT
                     );
                     turretIO.applyPower(pidTurret.calculateWithRealTime(turretIO.getHeadingTicks(), actualTime));
                     break;
                 case SEARCHING_RED_PUBLIC_CELL:
                 case ALIGNED_WITH_RED_PUBLIC_CELL:
                     pidTurret.setSetpoint(
-                            calculateTargetRadiantWithPosition(TurretConstants.redPublicCellPos)* TurretConstants.TICKS_PER_RADIANT
+                            parametersCalculator.getTurretRadiantTargetWithTargetPosition(TurretConstants.redPublicCellPos)* TurretConstants.TICKS_PER_RADIANT
                     );
                     turretIO.applyPower(pidTurret.calculateWithRealTime(turretIO.getHeadingTicks(), actualTime));
                     break;
                 case SEARCHING_BLUE_OPPOSITE_CELL:
                 case ALIGNED_WITH_BLUE_OPPOSITE_CELL:
                     pidTurret.setSetpoint(
-                            calculateTargetRadiantWithPosition(TurretConstants.blueOppositeCellPos)* TurretConstants.TICKS_PER_RADIANT
+                            parametersCalculator.getTurretRadiantTargetWithTargetPosition(TurretConstants.blueOppositeCellPos)* TurretConstants.TICKS_PER_RADIANT
                     );
                     turretIO.applyPower(pidTurret.calculateWithRealTime(turretIO.getHeadingTicks(), actualTime));
                     break;
                 case SEARCHING_RED_OPPOSITE_CELL:
                 case ALIGNED_WITH_RED_OPPOSITE_CELL:
                     pidTurret.setSetpoint(
-                            calculateTargetRadiantWithPosition(TurretConstants.redOppositeCellPos)* TurretConstants.TICKS_PER_RADIANT
+                            parametersCalculator.getTurretRadiantTargetWithTargetPosition(TurretConstants.redOppositeCellPos)* TurretConstants.TICKS_PER_RADIANT
                     );
                     turretIO.applyPower(pidTurret.calculateWithRealTime(turretIO.getHeadingTicks(), actualTime));
                     break;
                 case SEARCHING_PUBLIC_SIDE_CENTER:
                 case ALIGNED_WITH_PUBLIC_SIDE_CENTER:
                     pidTurret.setSetpoint(
-                            calculateTargetRadiantWithPosition(TurretConstants.publicSideCenter)* TurretConstants.TICKS_PER_RADIANT
+                            parametersCalculator.getTurretRadiantTargetWithTargetPosition(TurretConstants.publicSideCenter)* TurretConstants.TICKS_PER_RADIANT
                     );
                     turretIO.applyPower(pidTurret.calculateWithRealTime(turretIO.getHeadingTicks(), actualTime));
                     break;
                 case SEARCHING_OPPOSITE_SIDE_CENTER:
                 case ALIGNED_WITH_OPPOSITE_SIDE_CENTER:
                     pidTurret.setSetpoint(
-                            calculateTargetRadiantWithPosition(TurretConstants.oppositeSideCenter)* TurretConstants.TICKS_PER_RADIANT
+                            parametersCalculator.getTurretRadiantTargetWithTargetPosition(TurretConstants.oppositeSideCenter)* TurretConstants.TICKS_PER_RADIANT
                     );
                     turretIO.applyPower(pidTurret.calculateWithRealTime(turretIO.getHeadingTicks(), actualTime));
                     break;
                 case SEARCHING_TARGET_POS:
                 case ALIGNED_WITH_TARGET_POS:
                     pidTurret.setSetpoint(
-                            calculateTargetRadiantWithPosition(targetPos) * TurretConstants.TICKS_PER_RADIANT
+                            parametersCalculator.getTurretRadiantTargetWithTargetPosition(targetPos) * TurretConstants.TICKS_PER_RADIANT
                     );
                     turretIO.applyPower(pidTurret.calculateWithRealTime(turretIO.getHeadingTicks(), actualTime));
                     break;
@@ -198,27 +193,30 @@ public class TurretSubsystem extends SubsystemBase {
                     //pidTurret.setSetpoint(0.0);
                     //break;
                 default:
-                    robot.getTelemetry().addLine("turret system state isn't valid");
+                    telemetry.addLine("turret system state isn't valid");
                     break;
             }
 
         }
 
-        robot.getTelemetry().addData("TargetPosTicks", pidTurret.getSetpoint());
-        robot.getTelemetry().addData("TargetPosRadiant", pidTurret.getSetpoint() / TurretConstants.TICKS_PER_RADIANT);
-        robot.getTelemetry().addLine();
-        robot.getTelemetry().addData("CurrentHeadingTicks", turretIO.getHeadingTicks());
-        robot.getTelemetry().addData("CurrentHeadingRadiant", turretIO.getHeadingRadiant());
-        robot.getTelemetry().addData("CurrentHeadingDegrees", turretIO.getHeadingTicks() / TurretConstants.TICKS_PER_DEGREES);
-        robot.getTelemetry().addLine();
-        robot.getTelemetry().addData("TurretMotorPower", turretIO.getTurretVoltage());
-        robot.getTelemetry().addLine();
-        robot.getTelemetry().addData("degrees angle from origin to red public cell",Math.toDegrees(calculateTargetRadiantWithPosition(TurretConstants.redPublicCellPos) ));
-        robot.getTelemetry().addLine();
-        robot.getTelemetry().addData("Turret wanted state", wantedState);
-        robot.getTelemetry().addData("Turret system state", systemState);
-        //robot.getTelemetry().addData("output of my superbe fonction", calculateTargetRadiantWithPosition(TurretConstants.redPublicCellPos));
-        //robot.getTelemetry().addData("pos Robot", robot.getRobotPos());
+        telemetry.addData("TargetPosTicks", pidTurret.getSetpoint());
+        telemetry.addData("TargetPosRadiant", pidTurret.getSetpoint() / TurretConstants.TICKS_PER_RADIANT);
+        telemetry.addLine();
+        telemetry.addData("CurrentHeadingTicks", turretIO.getHeadingTicks());
+        telemetry.addData("CurrentHeadingRadiant", turretIO.getHeadingRadiant());
+        telemetry.addData("CurrentHeadingDegrees", turretIO.getHeadingTicks() / TurretConstants.TICKS_PER_DEGREES);
+        telemetry.addLine();
+        telemetry.addData("TurretMotorPower", turretIO.getTurretVoltage());
+        telemetry.addLine();
+        //ttTelemetry().addData("degrees angle from origin to red public cell",Math.toDegrees(calculateTargetRadiantWithPosition(TurretConstants.redPublicCellPos) ));
+        telemetry.addData("Turret wanted state", wantedState);
+        telemetry.addData("Turret system state", systemState);
+    }
+
+    public void resetTurret()
+    {
+        turretIO.resetMotor();
+        pidTurret.reset(turretIO.getHeadingTicks());
     }
 
     private void RunStateMachine(){
@@ -274,7 +272,7 @@ public class TurretSubsystem extends SubsystemBase {
                     systemState = SystemState.GOING_TO_ANGLE;
                 break;
             default:
-                robot.getTelemetry().addLine("Please enter a valid turret Wanted state");
+                telemetry.addLine("Please enter a valid turret Wanted state");
         }
 
         boolean alignedWithTarget = UtilsRBL.isInRange(turretIO.getHeadingTicks(), pidTurret.getSetpoint(), TurretConstants.turretTolerance);
@@ -343,21 +341,9 @@ public class TurretSubsystem extends SubsystemBase {
             case ALIGNED_WITH_ANGLE:
                 break;
             default:
-                robot.getTelemetry().addLine("turret system state isn't valid");
+                telemetry.addLine("turret system state isn't valid");
                 break;
         }
-    }
-
-    private double calculateTargetRadiantWithPosition(Pose2d targetPos1) {
-        this.targetPos = targetPos1;
-        double xRobot = getRobotPos.get().xMeters;
-        double yRobot = getRobotPos.get().yMeters;
-        double headingRobot = getRobotPos.get().headingRadians;
-
-        double xTargetRobot = Math.cos(headingRobot - TurretConstants.offsetHeading) * (targetPos.xMeters - xRobot) + Math.sin(headingRobot - TurretConstants.offsetHeading) * (targetPos.yMeters - yRobot);
-        double yTargetRobot = -Math.sin(headingRobot - TurretConstants.offsetHeading) * (targetPos.xMeters - xRobot) + Math.cos(headingRobot - TurretConstants.offsetHeading) * (targetPos.yMeters - yRobot);
-
-        return Math.atan2(yTargetRobot, xTargetRobot);
     }
 
     //public void init(){
@@ -371,10 +357,6 @@ public class TurretSubsystem extends SubsystemBase {
     //        isInit = true;
     //        }
     //    }
-    //}
-
-    //public double calculateTargetTicksFromRadiant(double radiants){
-    //    return radiants * TurretConstants.TICKS_PER_RADIANT;
     //}
 
 
