@@ -35,7 +35,6 @@ public class ShooterTest extends OpMode {
         private final ArrayList<BallType> balls = new ArrayList();
     }
 
-
     private DcMotor shooterMotor;
     private double shooterPower = 0.0;
 
