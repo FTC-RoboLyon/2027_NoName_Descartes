@@ -156,18 +156,17 @@ public final class DrivetrainSubsystem extends SubsystemBase
         this.activePath = path;
     }
 
-    /** Set a heading target for FRICTION_NEGLECTED. Switch the wanted mode to PATH_FOLLOWING separately. */
+    /** Set a heading target for FRICTION_NEGLECTED. Switch the wanted mode to FRICTION_NEGELECTED separately. */
     public void setTargetHeading(double targetHeading)
     {
         this.targetHeading = targetHeading;
     }
 
     /** Add a given angle value in rad (can be negative) to the current heading target of FRICTION_NEGELECTED DriveMode.
-     *  Switch the wanted mode to PATH_FOLLOWING separately. */
+     *  Switch the wanted mode to FRICTION_NEGELECTED separately. */
     public void incrementHeadingTarget(double value)
     {
-        targetHeading += value;
-        targetHeading = UtilsRBL.wrapNegPiToPi(targetHeading);
+        targetHeading = UtilsRBL.wrapNegPiToPi(targetHeading + value);
     }
 
     /** Latest authoritative (fused) field pose. */
@@ -266,6 +265,7 @@ public final class DrivetrainSubsystem extends SubsystemBase
 
         telemetry.addData("Target",targetHeading);
         telemetry.addData("Heading", UtilsRBL.wrapNegPiToPi(inputs.currentPose.headingRadians));
+        telemetry.addData("InputsOverrriden", previousInputsOverriden);
     }
 
 

@@ -27,4 +27,10 @@ public class ChangeHeadingTargetCmd extends CommandBase {
             drivetrain.setTargetHeading(value);
         }
     }
+
+    @Override
+    public boolean isFinished()
+    {
+        return true;
+    }
 }

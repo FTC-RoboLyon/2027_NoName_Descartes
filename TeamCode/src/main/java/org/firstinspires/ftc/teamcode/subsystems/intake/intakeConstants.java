@@ -18,7 +18,7 @@ public final class intakeConstants {
 
     // --- Both Motors ---
     public final static DcMotor.ZeroPowerBehavior INTAKE_ZERO_POWER_BEHAVIOR = DcMotor.ZeroPowerBehavior.FLOAT;
-    public final static double VOLTAGE_COMPENSATION = 10.0;
+    public final static double VOLTAGE_COMPENSATION = 12.0;
 
     // --- Voltage ---
     public final static double REST = 0.0;

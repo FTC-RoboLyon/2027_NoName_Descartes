@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.seattlesolvers.solverslib.command.CommandScheduler;
 import com.seattlesolvers.solverslib.command.button.Button;
@@ -26,6 +28,7 @@ import org.firstinspires.ftc.teamcode.subsystems.ShooterParametersCalculator.Sho
 import org.firstinspires.ftc.teamcode.subsystems.drivetrain.DcMotorWheelIO;
 import org.firstinspires.ftc.teamcode.subsystems.drivetrain.DrivetrainSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.drivetrain.DrivetrainConstants;
+import org.firstinspires.ftc.teamcode.subsystems.intake.IntakeIO;
 import org.firstinspires.ftc.teamcode.subsystems.intake.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.localization.OTOS;
 import org.firstinspires.ftc.teamcode.subsystems.localization.OdometryWithPinpoint;
@@ -53,17 +56,22 @@ public class RobotContainer{
             throw new RuntimeException("Teleop RobotContainer constructor used with a auto RobotMode");
         }
 
-        drivetrain = new DrivetrainSubsystem(getDrivetrainIO(hmap), getLocalizer(hmap), new Pose2d(),logger ,telemetry);
-        frontIntake = new IntakeSubsystem(hmap, true);
-        backIntake = new IntakeSubsystem(hmap, false);
+        if (Constants.ROBOT_MODEL != Constants.RobotModel.COMPETITION)
+        {
+            telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
+        }
 
-        shooterParametersCalculator = new ShooterParametersCalculator(()-> drivetrain.getCurrentPose(), telemetry);
-        turret = new TurretSubsystem(hmap, telemetry, shooterParametersCalculator);
-        shooter = new ShooterSubsystem(hmap, telemetry, shooterParametersCalculator);
+        drivetrain = new DrivetrainSubsystem(getDrivetrainIO(hmap), getLocalizer(hmap), new Pose2d(),logger ,telemetry);
+        frontIntake = new IntakeSubsystem(new IntakeIO(hmap, true));
+        backIntake = new IntakeSubsystem(new IntakeIO(hmap, false));
+
+        //shooterParametersCalculator = new ShooterParametersCalculator(()-> drivetrain.getCurrentPose(), telemetry);
+        //turret = new TurretSubsystem(hmap, telemetry, shooterParametersCalculator);
+        //shooter = new ShooterSubsystem(hmap, telemetry, shooterParametersCalculator);
 
         voltageCompensator = new VoltageCompensator(hmap);
 
-        CommandScheduler.getInstance().registerSubsystem(turret, shooter);
+        //CommandScheduler.getInstance().registerSubsystem(turret, shooter);
 
         this.robotMode = robotMode;
 
@@ -78,10 +86,19 @@ public class RobotContainer{
             throw new RuntimeException("Auto RobotContainer constructor used with a Teleop RobotMode");
         }
 
+        if (Constants.ROBOT_MODEL != Constants.RobotModel.COMPETITION)
+        {
+            telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
+        }
+
         drivetrain = new DrivetrainSubsystem(getDrivetrainIO(hmap), getLocalizer(hmap), new Pose2d(),logger ,telemetry); //TODO : add starting poses
-        frontIntake = new IntakeSubsystem(hmap, true);
-        backIntake = new IntakeSubsystem(hmap, false);
+        frontIntake = new IntakeSubsystem(new IntakeIO(hmap, true));
+        backIntake = new IntakeSubsystem(new IntakeIO(hmap, false));
         voltageCompensator = new VoltageCompensator(hmap);
+
+        //shooterParametersCalculator = new ShooterParametersCalculator(()-> drivetrain.getCurrentPose(), telemetry);
+        //turret = new TurretSubsystem(hmap, telemetry, shooterParametersCalculator);
+        //shooter = new ShooterSubsystem(hmap, telemetry, shooterParametersCalculator);
 
         this.robotMode = robotMode;
     }
@@ -100,28 +117,28 @@ public class RobotContainer{
             //TODO : choose for auto;
         }
 
-        turret.setWantedState(TurretSubsystem.WantedState.STAND_BY);
-        shooter.setShooterControlMode(ControlMode.VELOCITY_DUTYCYCLE_PID_FF);
+        //turret.setWantedState(TurretSubsystem.WantedState.STAND_BY);
+        //shooter.setShooterControlMode(ControlMode.VELOCITY_DUTYCYCLE_PID_FF);
     }
 
     public void start()
     {
         drivetrain.start();
-        shooter.start();
-        turret.resetTurret();
+        //shooter.start();
+        //turret.resetTurret();
     }
 
     public void periodic()
     {
         CommandScheduler.getInstance().run();
         voltageCompensator.update();
-        shooterParametersCalculator.update();
+        //shooterParametersCalculator.update();
         logger.flush();
     }
 
     public void end()
     {
-        shooter.setShooterControlMode(ControlMode.DISABLED);
+        //shooter.setShooterControlMode(ControlMode.DISABLED);
         resetCommands();
         logger.close();
     }
@@ -163,24 +180,24 @@ public class RobotContainer{
                 .whileHeld(new OverrideDrivetrainInputsCmd(drivetrain,0.0,1.0,0.0),
                         AlexisGamepad.getButton(Constants.RIGHT_DASH_BUTTON));
 
-        Button TRACK_RED_PUBLIC_CELL = new GamepadButton(VictorGamepad, Constants.TRACK_RED_PUBLIC_CELL)
-                .whenPressed(new ChangeTurretTarget(turret, TurretSubsystem.WantedState.TRACK_BLUE_PUBLIC_CELL));
-
-        Button TRACK_BLUE_OPPOSITE_CELL = new GamepadButton(VictorGamepad, Constants.TRACK_BLUE_OPPOSITE_CELL)
-                .whenPressed(new ChangeTurretTarget(turret, TurretSubsystem.WantedState.TRACK_BLUE_OPPOSITE_CELL));
-
-        Button STOP_TURRET = new GamepadButton(VictorGamepad, Constants.STOP_TURRET)
-                .whenPressed(new ChangeTurretTarget(turret, TurretSubsystem.WantedState.STAND_BY));
-
+        //Button TRACK_RED_PUBLIC_CELL = new GamepadButton(VictorGamepad, Constants.TRACK_RED_PUBLIC_CELL)
+        //        .whenPressed(new ChangeTurretTarget(turret, TurretSubsystem.WantedState.TRACK_BLUE_PUBLIC_CELL));
+//
+        //Button TRACK_BLUE_OPPOSITE_CELL = new GamepadButton(VictorGamepad, Constants.TRACK_BLUE_OPPOSITE_CELL)
+        //        .whenPressed(new ChangeTurretTarget(turret, TurretSubsystem.WantedState.TRACK_BLUE_OPPOSITE_CELL));
+//
+        //Button STOP_TURRET = new GamepadButton(VictorGamepad, Constants.STOP_TURRET)
+        //        .whenPressed(new ChangeTurretTarget(turret, TurretSubsystem.WantedState.STAND_BY));
+//
     }
 
     // --- Subsystems ---
 
     public DrivetrainSubsystem drivetrain;
     public IntakeSubsystem frontIntake, backIntake;
-    private TurretSubsystem turret;
-    private ShooterSubsystem shooter;
-    private ShooterParametersCalculator shooterParametersCalculator;
+    //private TurretSubsystem turret;
+    //private ShooterSubsystem shooter;
+    //private ShooterParametersCalculator shooterParametersCalculator;
     public VoltageCompensator voltageCompensator;
 
     // --- IO getters ---

@@ -29,9 +29,9 @@ public class IntakeSubsystem extends SubsystemBase {
     private SystemState systemState =  SystemState.IDLE;
     private ControlMode controlMode = ControlMode.DISABLED;
 
-    public IntakeSubsystem(HardwareMap hmap, boolean isFrontIntake)
+    public IntakeSubsystem(IntakeIO intakeIO)
     {
-        intakeIO = new IntakeIO(hmap, isFrontIntake);
+        this.intakeIO = intakeIO;
     }
 
     public void SetControlMode (ControlMode mode)
@@ -75,8 +75,7 @@ public class IntakeSubsystem extends SubsystemBase {
                         break;
 
                     default:
-                        //TODO
-                        break;
+                        throw new IllegalStateException("Can't run Intake state machine with an unknown systemState");
                 }
 
             case MANUAL_VOLTAGE:
@@ -87,8 +86,7 @@ public class IntakeSubsystem extends SubsystemBase {
                 break;
 
             default:
-                //TODO
-                break;
+                throw new IllegalStateException("Unsupported Control Mode used for intake");
         }
 
         intakeIO.SetPower(motorPower);
@@ -107,8 +105,7 @@ public class IntakeSubsystem extends SubsystemBase {
                 break;
 
             default:
-                //TODO
-                break;
+                throw new IllegalStateException("Can't run Intake State machine with an unknown wantedState");
         }
 
         switch(systemState)
@@ -121,8 +118,7 @@ public class IntakeSubsystem extends SubsystemBase {
                 break;
 
             default:
-                //TODO : warn
-                break;
+                throw new IllegalStateException("Can't run Intake State machine with an unknown systemState");
         }
     }
 }
