@@ -13,6 +13,7 @@ public class ChangeHeadingTargetCmd extends CommandBase {
         this.drivetrain = drivetrain;
         this.robotRelative = robotRelative;
         this.value = value;
+        addRequirements(drivetrain);
     }
 
     @Override

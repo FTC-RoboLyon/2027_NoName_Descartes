@@ -45,9 +45,10 @@ public class RobotContainer{
         TELEOP_RED
     }
 
-    WpilogFileLogger logger = WpilogFileLogger.inDirectory("/sdcard/FIRST/RBLLogs");
-    RobotMode robotMode;
-    GamepadEx AlexisGamepad, VictorGamepad;
+    private WpilogFileLogger logger = WpilogFileLogger.inDirectory("/sdcard/FIRST/RBLLogs");
+    private RobotMode robotMode;
+    private GamepadEx AlexisGamepad, VictorGamepad;
+    private Telemetry telemetry;
 
     public RobotContainer(HardwareMap hmap, Telemetry telemetry, GamepadEx gamepad1, GamepadEx gamepad2, RobotMode robotMode)
     {
@@ -77,6 +78,7 @@ public class RobotContainer{
 
         AlexisGamepad = gamepad1;
         VictorGamepad = gamepad2;
+        this.telemetry = telemetry;
     }
 
     public RobotContainer(HardwareMap hmap, Telemetry telemetry, RobotMode robotMode)
@@ -101,6 +103,7 @@ public class RobotContainer{
         //shooter = new ShooterSubsystem(hmap, telemetry, shooterParametersCalculator);
 
         this.robotMode = robotMode;
+        this.telemetry = telemetry;
     }
 
     public void init()
@@ -161,10 +164,10 @@ public class RobotContainer{
         backIntake.ConfigureManualSupplier(()-> VictorGamepad.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER));
 
         Button PI2_CCW = new GamepadButton(AlexisGamepad,Constants.PI2_CCW_BUTTON)
-                .whenPressed(new ChangeHeadingTargetCmd(drivetrain, -Math.PI/2.0, true));
+                .whenPressed(new ChangeHeadingTargetCmd(drivetrain, Math.PI/2.0, true));
 
         Button PI2_CW = new GamepadButton(AlexisGamepad,Constants.PI2_CW_BUTTON)
-                .whenPressed(new ChangeHeadingTargetCmd(drivetrain, Math.PI/2.0, true));
+                .whenPressed(new ChangeHeadingTargetCmd(drivetrain, -Math.PI/2.0, true));
 
         Button PI = new GamepadButton(AlexisGamepad,Constants.PI_BUTTON)
                 .whenPressed(new ChangeHeadingTargetCmd(drivetrain, Math.PI, true));
@@ -173,12 +176,12 @@ public class RobotContainer{
                 .whenPressed(new ChangeHeadingTargetCmd(drivetrain, 0.0, false));
 
         Button RIGHT_DASH = new GamepadButton(AlexisGamepad, Constants.RIGHT_DASH_BUTTON)
-                .whileHeld(new OverrideDrivetrainInputsCmd(drivetrain,0.0,-1.0,0.0),
-                        AlexisGamepad.getButton(Constants.LEFT_DASH_BUTTON));
+                .whenPressed(new OverrideDrivetrainInputsCmd(drivetrain,0.0,-1.0,0.0)
+                .interruptOn(()->(AlexisGamepad.wasJustPressed(Constants.LEFT_DASH_BUTTON) || !AlexisGamepad.getButton(Constants.RIGHT_DASH_BUTTON))));
 
         Button LEFT_DASH = new GamepadButton(AlexisGamepad, Constants.LEFT_DASH_BUTTON)
-                .whileHeld(new OverrideDrivetrainInputsCmd(drivetrain,0.0,1.0,0.0),
-                        AlexisGamepad.getButton(Constants.RIGHT_DASH_BUTTON));
+                .whenPressed(new OverrideDrivetrainInputsCmd(drivetrain,0.0,1.0,0.0)
+                .interruptOn(()->(AlexisGamepad.wasJustPressed(Constants.RIGHT_DASH_BUTTON) || !AlexisGamepad.getButton(Constants.LEFT_DASH_BUTTON))));
 
         //Button TRACK_RED_PUBLIC_CELL = new GamepadButton(VictorGamepad, Constants.TRACK_RED_PUBLIC_CELL)
         //        .whenPressed(new ChangeTurretTarget(turret, TurretSubsystem.WantedState.TRACK_BLUE_PUBLIC_CELL));

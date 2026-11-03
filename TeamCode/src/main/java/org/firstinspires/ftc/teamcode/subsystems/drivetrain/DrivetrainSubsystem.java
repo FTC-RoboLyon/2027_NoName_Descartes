@@ -172,7 +172,7 @@ public final class DrivetrainSubsystem extends SubsystemBase
     /** Latest authoritative (fused) field pose. */
     public Pose2d getCurrentPose()
     {
-        return inputs.currentPose;
+        return inputs.currentPose.copy();
     }
 
     public void resetPose(Pose2d newPose)

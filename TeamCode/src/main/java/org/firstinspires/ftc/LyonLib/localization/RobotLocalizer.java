@@ -162,7 +162,7 @@ public abstract class RobotLocalizer {
             logger.log("RobotLocalizer/EstimatedPos", EstimatedPos.toArray());
             logger.log("RobotLocalizer/PosErrorCovariance", Arrays.deepToString(posErrorCovariance));
         }
-        return EstimatedPos;
+        return EstimatedPos.copy();
     }
 
     public Pose2d GetLastEstimatedPos()

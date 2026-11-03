@@ -28,8 +28,8 @@ public class TestTeleopV1 extends OpMode{
     private DcMotorEx shooterFrontMotor, shooterBackMotor;
     private double shooterPower;
     private Servo jspCommentTappeler, lePoteDeLautre; //left, right
-    public static double leftPollenPos = 0.75, leftNectarPos = 0.3;
-    public static double rightPollenPos = 0.25, rightNectarPos = 0.5;
+    public static double leftPollenPos = 0.7, leftNectarPos = 0.8;
+    public static double rightPollenPos = 0.3, rightNectarPos = 0.15;
     private boolean shootingPollen = true;
 
     @Override
@@ -58,7 +58,9 @@ public class TestTeleopV1 extends OpMode{
         turret();
         shooter();
 
-        telemetry.addData("ShooterMotorRPM", shooterFrontMotor.getVelocity());
+        telemetry.addData("ShooterMotorRPMFront", shooterFrontMotor.getVelocity());
+        telemetry.addData("ShooterMotorRPMBack", shooterBackMotor.getVelocity());
+        telemetry.addData("ShooterMotorPos", shooterBackMotor.getCurrentPosition());
         telemetry.update();
     }
 

@@ -22,15 +22,20 @@ public class OverrideDrivetrainInputsCmd extends CommandBase {
 
     @Override
     public void initialize()
-    {}
+    {
+
+    }
 
     @Override
     public void execute()
     {
         if(Math.abs(UtilsRBL.wrapNegPiToPi(drivetrain.getCurrentPose().headingRadians)) > Math.PI/2.0)
         {
-            strafe = -strafe;
+            drivetrain.OverrideInputs(fwd, -strafe, rotation);
         }
-        drivetrain.OverrideInputs(fwd, strafe, rotation);
+        else
+        {
+            drivetrain.OverrideInputs(fwd, strafe, rotation);
+        }
     }
 }
