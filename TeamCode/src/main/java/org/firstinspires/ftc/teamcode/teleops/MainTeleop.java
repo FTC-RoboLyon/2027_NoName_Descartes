@@ -8,16 +8,17 @@ import com.seattlesolvers.solverslib.gamepad.GamepadEx;
 import org.firstinspires.ftc.teamcode.subsystems.RobotContainer;
 
 
-@TeleOp
+@TeleOp(group = "MainOpMode")
 public class MainTeleop extends OpMode{
     RobotContainer robotContainer;
 
     @Override
     public void init()
     {
-        robotContainer = new RobotContainer(hardwareMap, telemetry,
+        robotContainer = new RobotContainer(telemetry,
                 new GamepadEx(gamepad1), new GamepadEx(gamepad2), RobotContainer.RobotMode.TELEOP_RED);
 
+        robotContainer.initializeSubsystems(hardwareMap);
         robotContainer.init();
     }
 

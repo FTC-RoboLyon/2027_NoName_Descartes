@@ -105,7 +105,7 @@ public class TurretSubsystem extends SubsystemBase {
     @Override
     public void periodic(){
         turretIO.update();
-        pidTurret.setGains(TurretConstants.turretKP,TurretConstants.turretKI , TurretConstants.turretKD);
+        pidTurret.setGains(TurretConstants.turretKP,TurretConstants.turretKI , TurretConstants.turretKD); //TODO : suppress after tuning coefs (or before adding a updatePIDcoef() fonction)
 
         //if (robot.getRobotPos().yMeters < publicLauchZone && robot.getAlliance() == miniRobot.alliance.RED)
         //    targetPos = redPublicCellPos;

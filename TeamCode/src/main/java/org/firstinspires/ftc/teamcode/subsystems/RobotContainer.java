@@ -45,12 +45,19 @@ public class RobotContainer{
         TELEOP_RED
     }
 
+    public enum GamePiece
+    {
+        POLLEN,
+        RED_NECTAR,
+        BLUE_NECTAR
+    }
+
     private WpilogFileLogger logger = WpilogFileLogger.inDirectory("/sdcard/FIRST/RBLLogs");
     private RobotMode robotMode;
     private GamepadEx AlexisGamepad, VictorGamepad;
     private Telemetry telemetry;
 
-    public RobotContainer(HardwareMap hmap, Telemetry telemetry, GamepadEx gamepad1, GamepadEx gamepad2, RobotMode robotMode)
+    public RobotContainer(Telemetry telemetry, GamepadEx gamepad1, GamepadEx gamepad2, RobotMode robotMode)
     {
         if (robotMode != RobotMode.TELEOP_BLUE && robotMode != RobotMode.TELEOP_RED)
         {
@@ -62,18 +69,6 @@ public class RobotContainer{
             telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         }
 
-        drivetrain = new DrivetrainSubsystem(getDrivetrainIO(hmap), getLocalizer(hmap), new Pose2d(),logger ,telemetry);
-        frontIntake = new IntakeSubsystem(new IntakeIO(hmap, true));
-        backIntake = new IntakeSubsystem(new IntakeIO(hmap, false));
-
-        //shooterParametersCalculator = new ShooterParametersCalculator(()-> drivetrain.getCurrentPose(), telemetry);
-        //turret = new TurretSubsystem(hmap, telemetry, shooterParametersCalculator);
-        //shooter = new ShooterSubsystem(hmap, telemetry, shooterParametersCalculator);
-
-        voltageCompensator = new VoltageCompensator(hmap);
-
-        //CommandScheduler.getInstance().registerSubsystem(turret, shooter);
-
         this.robotMode = robotMode;
 
         AlexisGamepad = gamepad1;
@@ -81,7 +76,7 @@ public class RobotContainer{
         this.telemetry = telemetry;
     }
 
-    public RobotContainer(HardwareMap hmap, Telemetry telemetry, RobotMode robotMode)
+    public RobotContainer(Telemetry telemetry, RobotMode robotMode)
     {
         if (robotMode == RobotMode.TELEOP_BLUE || robotMode == RobotMode.TELEOP_RED)
         {
@@ -93,17 +88,21 @@ public class RobotContainer{
             telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         }
 
-        drivetrain = new DrivetrainSubsystem(getDrivetrainIO(hmap), getLocalizer(hmap), new Pose2d(),logger ,telemetry); //TODO : add starting poses
+        this.robotMode = robotMode;
+        this.telemetry = telemetry;
+    }
+
+    public void initializeSubsystems(HardwareMap hmap)
+    {
+        drivetrain = new DrivetrainSubsystem(getDrivetrainIO(hmap), getLocalizer(hmap), new Pose2d(),logger ,telemetry);
         frontIntake = new IntakeSubsystem(new IntakeIO(hmap, true));
         backIntake = new IntakeSubsystem(new IntakeIO(hmap, false));
-        voltageCompensator = new VoltageCompensator(hmap);
 
         //shooterParametersCalculator = new ShooterParametersCalculator(()-> drivetrain.getCurrentPose(), telemetry);
         //turret = new TurretSubsystem(hmap, telemetry, shooterParametersCalculator);
         //shooter = new ShooterSubsystem(hmap, telemetry, shooterParametersCalculator);
 
-        this.robotMode = robotMode;
-        this.telemetry = telemetry;
+        voltageCompensator = new VoltageCompensator(hmap);
     }
 
     public void init()
@@ -113,15 +112,15 @@ public class RobotContainer{
             drivetrain.setWantedMode(DrivetrainSubsystem.DriveMode.FRICTION_NEGLECTED);
             frontIntake.SetControlMode(ControlMode.MANUAL_VOLTAGE);
             backIntake.SetControlMode(ControlMode.MANUAL_VOLTAGE);
+            //shooter.setShooterControlMode(ControlMode.VELOCITY_DUTYCYCLE_PID_FF);
+            //turret.setWantedState(TurretSubsystem.WantedState.STAND_BY);
+
             BindCommands();
         }
         else
         {
             //TODO : choose for auto;
         }
-
-        //turret.setWantedState(TurretSubsystem.WantedState.STAND_BY);
-        //shooter.setShooterControlMode(ControlMode.VELOCITY_DUTYCYCLE_PID_FF);
     }
 
     public void start()
@@ -142,6 +141,12 @@ public class RobotContainer{
     public void end()
     {
         //shooter.setShooterControlMode(ControlMode.DISABLED);
+        //turret.setWantedState(TurretSubsystem.WantedState.STAND_BY);
+        backIntake.SetControlMode(ControlMode.DISABLED);
+        frontIntake.SetControlMode(ControlMode.DISABLED);
+        drivetrain.setWantedMode(DrivetrainSubsystem.DriveMode.DISABLE);
+
+
         resetCommands();
         logger.close();
     }
@@ -196,12 +201,12 @@ public class RobotContainer{
 
     // --- Subsystems ---
 
-    public DrivetrainSubsystem drivetrain;
-    public IntakeSubsystem frontIntake, backIntake;
-    //private TurretSubsystem turret;
-    //private ShooterSubsystem shooter;
-    //private ShooterParametersCalculator shooterParametersCalculator;
-    public VoltageCompensator voltageCompensator;
+    public static DrivetrainSubsystem drivetrain;
+    public static IntakeSubsystem frontIntake, backIntake;
+    //public static TurretSubsystem turret;
+    //public static ShooterSubsystem shooter;
+    //public static ShooterParametersCalculator shooterParametersCalculator;
+    public static VoltageCompensator voltageCompensator;
 
     // --- IO getters ---
     private DriveIO getDrivetrainIO(HardwareMap hmap)

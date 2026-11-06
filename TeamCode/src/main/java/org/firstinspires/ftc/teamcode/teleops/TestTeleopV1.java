@@ -35,9 +35,9 @@ public class TestTeleopV1 extends OpMode{
     @Override
     public void init()
     {
-        robotContainer = new RobotContainer(hardwareMap, telemetry,
+        robotContainer = new RobotContainer(telemetry,
                 new GamepadEx(gamepad1), new GamepadEx(gamepad2), RobotContainer.RobotMode.TELEOP_RED);
-
+        robotContainer.initializeSubsystems(hardwareMap);
         robotContainer.init();
 
         initTurret();
