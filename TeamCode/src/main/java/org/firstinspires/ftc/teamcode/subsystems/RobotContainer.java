@@ -25,11 +25,13 @@ import org.firstinspires.ftc.teamcode.commands.ChangeHeadingTargetCmd;
 import org.firstinspires.ftc.teamcode.commands.ChangeTurretTarget;
 import org.firstinspires.ftc.teamcode.commands.OverrideDrivetrainInputsCmd;
 import org.firstinspires.ftc.teamcode.subsystems.ShooterParametersCalculator.ShooterParametersCalculator;
+import org.firstinspires.ftc.teamcode.subsystems.camera.CameraSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.drivetrain.DcMotorWheelIO;
 import org.firstinspires.ftc.teamcode.subsystems.drivetrain.DrivetrainSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.drivetrain.DrivetrainConstants;
 import org.firstinspires.ftc.teamcode.subsystems.intake.IntakeIO;
 import org.firstinspires.ftc.teamcode.subsystems.intake.IntakeSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.localization.LocalizationLimelight;
 import org.firstinspires.ftc.teamcode.subsystems.localization.OTOS;
 import org.firstinspires.ftc.teamcode.subsystems.localization.OdometryWithPinpoint;
 import org.firstinspires.ftc.teamcode.subsystems.shooter.ShooterSubsystem;
@@ -97,14 +99,19 @@ public class RobotContainer{
         drivetrain = new DrivetrainSubsystem(getDrivetrainIO(hmap), getLocalizer(hmap), new Pose2d(),logger ,telemetry);
         frontIntake = new IntakeSubsystem(new IntakeIO(hmap, true));
         backIntake = new IntakeSubsystem(new IntakeIO(hmap, false));
+        camera = new CameraSubsystem(new LocalizationLimelight(hmap, "cam_ille"), this, logger);
 
         //shooterParametersCalculator = new ShooterParametersCalculator(()-> drivetrain.getCurrentPose(), telemetry);
         //turret = new TurretSubsystem(hmap, telemetry, shooterParametersCalculator);
         //shooter = new ShooterSubsystem(hmap, telemetry, shooterParametersCalculator);
 
         voltageCompensator = new VoltageCompensator(hmap);
+
+        this.robotMode = robotMode;
+        this.telemetry = telemetry;
     }
 
+    // --- Command Based Structure ---
     public void init()
     {
         if (robotMode == RobotMode.TELEOP_BLUE || robotMode == RobotMode.TELEOP_RED)
@@ -114,6 +121,7 @@ public class RobotContainer{
             backIntake.SetControlMode(ControlMode.MANUAL_VOLTAGE);
             //shooter.setShooterControlMode(ControlMode.VELOCITY_DUTYCYCLE_PID_FF);
             //turret.setWantedState(TurretSubsystem.WantedState.STAND_BY);
+
 
             BindCommands();
         }
@@ -154,6 +162,12 @@ public class RobotContainer{
     public void resetCommands()
     {
         CommandScheduler.getInstance().reset();
+    }
+
+    // --- Public Methods ---
+    public Pose2d getRobotPose()
+    {
+        return drivetrain.getCurrentPose();
     }
 
     // --- Private methods ---
@@ -207,6 +221,7 @@ public class RobotContainer{
     //public static ShooterSubsystem shooter;
     //public static ShooterParametersCalculator shooterParametersCalculator;
     public static VoltageCompensator voltageCompensator;
+    public static CameraSubsystem camera;
 
     // --- IO getters ---
     private DriveIO getDrivetrainIO(HardwareMap hmap)
