@@ -4,7 +4,7 @@ import com.seattlesolvers.solverslib.util.InterpLUT;
 
 import org.firstinspires.ftc.LyonLib.kinematics.Pose2d;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.subsystems.Turret.TurretConstants;
+import org.firstinspires.ftc.teamcode.subsystems.turret.TurretConstants;
 import org.firstinspires.ftc.teamcode.subsystems.shooterNectarPollen.Hood.HoodConstants;
 
 import java.util.function.Supplier;

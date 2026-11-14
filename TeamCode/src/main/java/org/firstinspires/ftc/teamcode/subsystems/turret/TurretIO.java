@@ -1,8 +1,7 @@
-package org.firstinspires.ftc.teamcode.subsystems.Turret;
+package org.firstinspires.ftc.teamcode.subsystems.turret;
 
 import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.CRServo;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.seattlesolvers.solverslib.hardware.motors.Motor;
