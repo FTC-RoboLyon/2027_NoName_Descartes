@@ -19,26 +19,33 @@ public class ShooterParametersCalculator {
 
     private Supplier<Pose2d> getRobotPos;
     //private Pose2d RobotSpeed;
-    private Pose2d targetPos = new Pose2d();
 
-    public void setTargetPos(Pose2d pos){targetPos = pos;}
-    public Pose2d getTargetPos(){return targetPos;}
+
+    public void setTargetPos(Pose2d pos){shootParam.targetPos = pos;}
+    public Pose2d getTargetPos(){return shootParam.targetPos;}
 
     private InterpLUT flywheelInterpolator = new InterpLUT();
     private InterpLUT hoodInterpolator = new InterpLUT();
 
-    public class ShootParam
+    public class ShootParameters
     {
+        private Pose2d targetPos = new Pose2d();
+
+        double xTargetTurret = 0.0;
+        double yTargetTurret = 0.0;
+
         public double flywheelSpeed = 0.0;
         public double hoodAngle = HoodConstants.HOOD_DEFAULT_POS;
         public double targetTurretAngle = 0.0;
+
+        public boolean isShootPossible = false;
     }
 
-    private ShootParam shootParam;
-    public ShootParam getShootParam()
+    private ShootParameters shootParam;
+    public ShootParameters getShootParam()
     {
         if (shootParam == null)
-            shootParam = new ShootParam();
+            shootParam = new ShootParameters();
         return shootParam;
     }
 
@@ -102,21 +109,21 @@ public class ShooterParametersCalculator {
         calculateRobotspeed();
 
         distanceToTarget = Math.sqrt(
-                Math.pow(targetPos.xMeters - getRobotPos.get().xMeters, 2)
-                        + Math.pow(targetPos.yMeters - getRobotPos.get().yMeters, 2)
+                Math.pow(shootParam.targetPos.xMeters - getRobotPos.get().xMeters, 2)
+                        + Math.pow(shootParam.targetPos.yMeters - getRobotPos.get().yMeters, 2)
         );
 
         shootParam.flywheelSpeed = flywheelInterpolator.get(distanceToTarget);
         shootParam.hoodAngle = hoodInterpolator.get(distanceToTarget);
 
 
-        double xTargetRobot = Math.cos(headingRobot - TurretConstants.offsetHeading) * (targetPos.xMeters - xRobot)
-                + Math.sin(headingRobot - TurretConstants.offsetHeading) * (targetPos.yMeters - yRobot);
+        shootParam.xTargetTurret = Math.cos(headingRobot - TurretConstants.offsetHeading) * (shootParam.targetPos.xMeters - xRobot)
+                + Math.sin(headingRobot - TurretConstants.offsetHeading) * (shootParam.targetPos.yMeters - yRobot);
 
-        double yTargetRobot = -Math.sin(headingRobot - TurretConstants.offsetHeading) * (targetPos.xMeters - xRobot)
-                + Math.cos(headingRobot - TurretConstants.offsetHeading) * (targetPos.yMeters - yRobot);
+        shootParam.yTargetTurret = -Math.sin(headingRobot - TurretConstants.offsetHeading) * (shootParam.targetPos.xMeters - xRobot)
+                + Math.cos(headingRobot - TurretConstants.offsetHeading) * (shootParam.targetPos.yMeters - yRobot);
 
-        shootParam.targetTurretAngle = Math.atan2(yTargetRobot, xTargetRobot);
+        shootParam.targetTurretAngle = Math.atan2(shootParam.yTargetTurret, shootParam.xTargetTurret);
     }
 
     private void calculateRobotspeed()

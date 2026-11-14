@@ -91,6 +91,8 @@ public class PollenShooterSubsystem extends SubsystemBase {
         flywheelPID.setOutputLimits(-1.0, 1.0);
         flywheelFeedForward.setOutputLimits(-1.0, 1.0);
 
+        hoodPID.setOutputLimits(-1.0, 1.0);
+
     }
 
     public void setSuppliersManualSpeedSuppliers(BooleanSupplier shootNearTrigger, BooleanSupplier shootFacedWithCellTrigger, BooleanSupplier shootFromFlowerTrigger)
@@ -118,7 +120,19 @@ public class PollenShooterSubsystem extends SubsystemBase {
         switch (hoodControlMode)
         {
             case MANUAL_POSITION:
+
+                if (shootNearTrigger.getAsBoolean())
+                    hoodTargetAngle = HoodConstants.HOOD_ANGLE_NEAR;
+                else if (shootFacedWithCellTrigger.getAsBoolean())
+                    hoodTargetAngle = HoodConstants.HOOD_ANGLE_FACED_WITH_CELL;
+                else if (shootFromFlowerTrigger.getAsBoolean())
+                    hoodTargetAngle = HoodConstants.HOOD_ANGLE_FROM_FLOWER;
+
+                hoodIO.setVoltage(
+                        hoodPID.calculateWithRealTime(hoodTargetAngle, hoodIO.getHoodAngle(), System.nanoTime())
+                );
                 break;
+
             case MANUAL_DUTY_CYCLE:
                 break;
             case POSITION_DUTYCYCLE_PID:
@@ -153,6 +167,17 @@ public class PollenShooterSubsystem extends SubsystemBase {
         switch (flywheelControlMode)
         {
             case MANUAL_VELOCITY:
+                if (shootNearTrigger.getAsBoolean())
+                    flywheelTargetSpeed = FlywheelConstants.FLYWHEEL_SPEED_NEAR;
+                else if (shootFacedWithCellTrigger.getAsBoolean())
+                    flywheelTargetSpeed = FlywheelConstants.FLYWHEEL_SPEED_FACED_WITH_CELL;
+                else if (shootFromFlowerTrigger.getAsBoolean())
+                    flywheelTargetSpeed = FlywheelConstants.FLYWHEEL_SPEED_FROM_FLOWER;
+
+                flywheelIO.applyPower(
+                        flywheelFeedForward.calculate(flywheelTargetSpeed)
+                                + flywheelPID.calculateWithRealTime(flywheelTargetSpeed, flywheelIO.getFlywheelVelocity(), System.nanoTime())
+                );
                 break;
             case MANUAL_DUTY_CYCLE:
                 flywheelIO.applyPower(flywheelManualVoltage.getAsDouble());

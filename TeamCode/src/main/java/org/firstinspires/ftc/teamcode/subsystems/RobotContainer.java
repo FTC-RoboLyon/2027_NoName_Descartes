@@ -24,6 +24,9 @@ import org.firstinspires.ftc.LyonLib.drive.MecanumDriveIO;
 import org.firstinspires.ftc.teamcode.commands.ChangeHeadingTargetCmd;
 import org.firstinspires.ftc.teamcode.commands.OverrideDrivetrainInputsCmd;
 import org.firstinspires.ftc.teamcode.subsystems.ShooterParametersCalculator.ShooterParametersCalculator;
+import org.firstinspires.ftc.teamcode.subsystems.ShooterPollen.Flywheel.FlywheelIO;
+import org.firstinspires.ftc.teamcode.subsystems.ShooterPollen.Hood.HoodIO;
+import org.firstinspires.ftc.teamcode.subsystems.ShooterPollen.PollenShooterSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.camera.CameraSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.drivetrain.DcMotorWheelIO;
 import org.firstinspires.ftc.teamcode.subsystems.drivetrain.DrivetrainSubsystem;
@@ -98,12 +101,14 @@ public class RobotContainer{
         backIntake = new IntakeSubsystem(new IntakeIO(hmap, false));
         camera = new CameraSubsystem(new LocalizationLimelight(hmap, "cam_ille"), this, logger);
 
-        //shooterParametersCalculator = new ShooterParametersCalculator(()-> drivetrain.getCurrentPose(), telemetry);
+        shooterParametersCalculator = new ShooterParametersCalculator( ()-> drivetrain.getCurrentPose(), telemetry);
+        shooterSubsystem = new PollenShooterSubsystem(new HoodIO(hmap), new FlywheelIO(hmap), shooterParametersCalculator);
+
         //turret = new TurretSubsystem(hmap, telemetry, shooterParametersCalculator);
-        //shooter = new ShooterSubsystem(hmap, telemetry, shooterParametersCalculator);
 
         voltageCompensator = new VoltageCompensator(hmap);
 
+        CommandScheduler.getInstance().registerSubsystem(shooterSubsystem, frontIntake, backIntake);
         this.robotMode = robotMode;
         this.telemetry = telemetry;
     }
@@ -114,9 +119,13 @@ public class RobotContainer{
         if (robotMode == RobotMode.TELEOP_BLUE || robotMode == RobotMode.TELEOP_RED)
         {
             drivetrain.setWantedMode(DrivetrainSubsystem.DriveMode.FRICTION_NEGLECTED);
+
             frontIntake.SetControlMode(ControlMode.MANUAL_VOLTAGE);
             backIntake.SetControlMode(ControlMode.MANUAL_VOLTAGE);
-            //shooter.setShooterControlMode(ControlMode.VELOCITY_DUTYCYCLE_PID_FF);
+
+            shooterSubsystem.setFlywheelControlMode(ControlMode.VELOCITY_DUTYCYCLE_PID_FF);
+            shooterSubsystem.setHoodControlMode(ControlMode.POSITION_DUTYCYCLE_PID);
+            shooterSubsystem.setWantedState(PollenShooterSubsystem.WantedState.STAND_BY);
             //turret.setWantedState(TurretSubsystem.WantedState.STAND_BY);
 
 
@@ -131,7 +140,6 @@ public class RobotContainer{
     public void start()
     {
         drivetrain.start();
-        //shooter.start();
         //turret.resetTurret();
     }
 
@@ -139,13 +147,11 @@ public class RobotContainer{
     {
         CommandScheduler.getInstance().run();
         voltageCompensator.update();
-        //shooterParametersCalculator.update();
         logger.flush();
     }
 
     public void end()
     {
-        //shooter.setShooterControlMode(ControlMode.DISABLED);
         //turret.setWantedState(TurretSubsystem.WantedState.STAND_BY);
         backIntake.SetControlMode(ControlMode.DISABLED);
         frontIntake.SetControlMode(ControlMode.DISABLED);
@@ -178,6 +184,9 @@ public class RobotContainer{
 
         frontIntake.ConfigureManualSupplier(()-> VictorGamepad.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER));
         backIntake.ConfigureManualSupplier(()-> VictorGamepad.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER));
+
+        //shooterSubsystem.setFlywheelManualVoltageSupplier(() -> VictorGamepad.getLeftY()); Tune this like you want but you have to give a double supplier that return duty cycle
+        //shooterSubsystem.setSuppliersManualSpeedSuppliers(); it's up to you
 
         Button PI2_CCW = new GamepadButton(AlexisGamepad,Constants.PI2_CCW_BUTTON)
                 .whenPressed(new ChangeHeadingTargetCmd(drivetrain, Math.PI/2.0, true));
@@ -214,9 +223,10 @@ public class RobotContainer{
 
     public static DrivetrainSubsystem drivetrain;
     public static IntakeSubsystem frontIntake, backIntake;
+    public static ShooterParametersCalculator shooterParametersCalculator;
+    public static PollenShooterSubsystem shooterSubsystem;
+
     //public static TurretSubsystem turret;
-    //public static ShooterSubsystem shooter;
-    //public static ShooterParametersCalculator shooterParametersCalculator;
     public static VoltageCompensator voltageCompensator;
     public static CameraSubsystem camera;
 

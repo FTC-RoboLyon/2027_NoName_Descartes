@@ -14,8 +14,8 @@ public class HoodConstants {
 
     public static double HOOD_DEFAULT_POS = 1.0; //TUNEME IN RADIANT
 
-    public static double HOOD_ANGLE_MIN = -1.0; //TUNEME IN RADIANT
-    public static double HOOD_ANGLE_MAX = 1.0; //TUNEME IN RADIANT
+    public static double HOOD_ANGLE_MIN = 0.5235987755982988; //TUNEME IN RADIANT
+    public static double HOOD_ANGLE_MAX = 0.75049157835756; //TUNEME IN RADIANT
 
     public static double HOOD_KP = 0.0; // TUNEME //from radiant to dutyCycle
     public static double HOOD_KI = 0.0; // TUNEME //from radiant to dutyCycle

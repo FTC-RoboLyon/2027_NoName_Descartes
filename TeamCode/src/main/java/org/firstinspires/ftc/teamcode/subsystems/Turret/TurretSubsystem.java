@@ -129,28 +129,28 @@ public class TurretSubsystem extends SubsystemBase {
                         case SEARCHING_PUBLIC_CELL:
                         case ALIGNED_WITH_PUBLIC_CELL:
                             pidTurret.setSetpoint(
-                                    parametersCalculator.getTurretRadiantTargetWithTargetPosition(TurretConstants.bluePublicCellePos) * TurretConstants.TICKS_PER_RADIANT
+                                    0.0//parametersCalculator.getTurretRadiantTargetWithTargetPosition(TurretConstants.bluePublicCellePos) * TurretConstants.TICKS_PER_RADIANT
                             );
                             turretIO.applyPower(pidTurret.calculateWithRealTime(turretIO.getHeadingTicks(), actualTime));
                             break;
                         case SEARCHING_OPPOSITE_CELL:
                         case ALIGNED_WITH_OPPOSITE_CELL:
                             pidTurret.setSetpoint(
-                                    parametersCalculator.getTurretRadiantTargetWithTargetPosition(TurretConstants.blueOppositeCellPos) * TurretConstants.TICKS_PER_RADIANT
+                                    0.0//parametersCalculator.getTurretRadiantTargetWithTargetPosition(TurretConstants.blueOppositeCellPos) * TurretConstants.TICKS_PER_RADIANT
                             );
                             turretIO.applyPower(pidTurret.calculateWithRealTime(turretIO.getHeadingTicks(), actualTime));
                             break;
                         case SEARCHING_PUBLIC_SIDE_CENTER:
                         case ALIGNED_WITH_PUBLIC_SIDE_CENTER:
                             pidTurret.setSetpoint(
-                                    parametersCalculator.getTurretRadiantTargetWithTargetPosition(TurretConstants.publicSideCenter) * TurretConstants.TICKS_PER_RADIANT
+                                    0.0//parametersCalculator.getTurretRadiantTargetWithTargetPosition(TurretConstants.publicSideCenter) * TurretConstants.TICKS_PER_RADIANT
                             );
                             turretIO.applyPower(pidTurret.calculateWithRealTime(turretIO.getHeadingTicks(), actualTime));
                             break;
                         case SEARCHING_OPPOSITE_SIDE_CENTER:
                         case ALIGNED_WITH_OPPOSITE_SIDE_CENTER:
                             pidTurret.setSetpoint(
-                                    parametersCalculator.getTurretRadiantTargetWithTargetPosition(TurretConstants.oppositeSideCenter) * TurretConstants.TICKS_PER_RADIANT
+                                    0.0//parametersCalculator.getTurretRadiantTargetWithTargetPosition(TurretConstants.oppositeSideCenter) * TurretConstants.TICKS_PER_RADIANT
                             );
                             turretIO.applyPower(pidTurret.calculateWithRealTime(turretIO.getHeadingTicks(), actualTime));
                             break;

@@ -28,7 +28,7 @@ public class HoodIO {
         hoodEncodeur = hmap.get(Motor.Encoder.class, HoodConstants.HOOD_ENCODEUR_NAME);
 
         hoodServo.setDirection(DcMotorSimple.Direction.FORWARD); //not sure
-        hoodServo.setPower(0.0); //not sure
+        hoodServo.setPower(0.0);
     }
 
     public void update()
