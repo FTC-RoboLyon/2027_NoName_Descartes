@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.subsystems.shooter.Hood;
+package org.firstinspires.ftc.teamcode.subsystems.shooterNectarPollen.Hood;
 
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;

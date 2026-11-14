@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.subsystems.shooter.Flywheel;
+package org.firstinspires.ftc.teamcode.subsystems.shooterNectarPollen.Flywheel;
 
 public class FlywheelConstants {
     public static final String FLYWHEEL_MOTOR1_NAME = "flywheelR";

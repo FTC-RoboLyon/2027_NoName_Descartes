@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.subsystems.shooter;
+package org.firstinspires.ftc.teamcode.subsystems.shooterNectarPollen;
 
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -11,10 +11,10 @@ import org.firstinspires.ftc.LyonLib.kinematics.Pose2d;
 import org.firstinspires.ftc.LyonLib.utils.UtilsRBL;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.subsystems.ShooterParametersCalculator.ShooterParametersCalculator;
-import org.firstinspires.ftc.teamcode.subsystems.shooter.Flywheel.FlywheelConstants;
-import org.firstinspires.ftc.teamcode.subsystems.shooter.Flywheel.FlywheelIO;
-import org.firstinspires.ftc.teamcode.subsystems.shooter.Hood.HoodConstants;
-import org.firstinspires.ftc.teamcode.subsystems.shooter.Hood.HoodIO;
+import org.firstinspires.ftc.teamcode.subsystems.shooterNectarPollen.Flywheel.FlywheelConstants;
+import org.firstinspires.ftc.teamcode.subsystems.shooterNectarPollen.Flywheel.FlywheelIO;
+import org.firstinspires.ftc.teamcode.subsystems.shooterNectarPollen.Hood.HoodConstants;
+import org.firstinspires.ftc.teamcode.subsystems.shooterNectarPollen.Hood.HoodIO;
 
 import java.util.function.DoubleSupplier;
 
@@ -257,8 +257,8 @@ public class ShooterSubsystem extends SubsystemBase {
 
             case SHOOT_POLLEN_AUTO:
 
-                targetFlywheelSpeed = parametersCalculator.getFlywheelSpeedForPollen(new Pose2d()); //TODO for now, we give a target pos to the shooterParametor function, but later, the shooterParametererCalculator class itself will contains the target pos for turret, flywheel and hood
-                targetHoodAngle = parametersCalculator.getHoodAngleForPollen(new Pose2d());//same
+                targetFlywheelSpeed = parametersCalculator.getShootParam().flywheelSpeed; //This is absolute shit but this shooter is for later
+                targetHoodAngle = parametersCalculator.getShootParam().hoodAngle;//same
 
                 if (systemState != SystemState.READY_TO_SHOOT_POLLEN_AUTO)
                     systemState = SystemState.PREPARING_POLLEN_SHOOT_AUTO;
@@ -297,8 +297,8 @@ public class ShooterSubsystem extends SubsystemBase {
 
             case SHOOT_NECTAR_AUTO:
 
-                targetFlywheelSpeed = parametersCalculator.getFlywheelSpeedForNectar(new Pose2d()); //same
-                targetHoodAngle = parametersCalculator.getHoodAngleForNectar(new Pose2d()); //same
+                targetFlywheelSpeed = parametersCalculator.getShootParam().flywheelSpeed; //same
+                targetHoodAngle = parametersCalculator.getShootParam().hoodAngle; //same
 
                 if (systemState != SystemState.READY_TO_SHOOT_NECTAR_AUTO)
                     systemState = SystemState.PREPARING_NECTAR_SHOOT_AUTO;

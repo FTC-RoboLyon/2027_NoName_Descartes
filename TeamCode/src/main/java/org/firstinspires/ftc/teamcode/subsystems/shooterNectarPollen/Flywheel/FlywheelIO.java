@@ -1,12 +1,10 @@
-package org.firstinspires.ftc.teamcode.subsystems.shooter.Flywheel;
+package org.firstinspires.ftc.teamcode.subsystems.shooterNectarPollen.Flywheel;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.LyonLib.control.FeedForwardModel;
-import org.firstinspires.ftc.LyonLib.control.PidRBL;
 import org.firstinspires.ftc.LyonLib.utils.VoltageCompensator;
 
 public class FlywheelIO {

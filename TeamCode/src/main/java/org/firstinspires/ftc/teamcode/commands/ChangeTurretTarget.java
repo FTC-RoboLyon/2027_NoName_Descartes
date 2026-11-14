@@ -2,7 +2,7 @@ package org.firstinspires.ftc.teamcode.commands;
 
 import com.seattlesolvers.solverslib.command.CommandBase;
 
-import org.firstinspires.ftc.teamcode.subsystems.turret.TurretSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.Turret.TurretSubsystem;
 
 public class ChangeTurretTarget extends CommandBase {
     private TurretSubsystem turret;

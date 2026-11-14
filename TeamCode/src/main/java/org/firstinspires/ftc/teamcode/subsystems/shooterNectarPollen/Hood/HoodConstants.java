@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.subsystems.shooter.Hood;
+package org.firstinspires.ftc.teamcode.subsystems.shooterNectarPollen.Hood;
 
 public class HoodConstants {
     public static final String HOOD_NAME = "hood";

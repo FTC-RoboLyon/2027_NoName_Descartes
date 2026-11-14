@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.subsystems.turret;
+package org.firstinspires.ftc.teamcode.subsystems.Turret;
 
 import com.acmerobotics.dashboard.config.Config;
 

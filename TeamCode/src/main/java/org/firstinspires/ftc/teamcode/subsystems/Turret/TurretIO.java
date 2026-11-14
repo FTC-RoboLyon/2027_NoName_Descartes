@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.subsystems.turret;
+package org.firstinspires.ftc.teamcode.subsystems.Turret;
 
 import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.CRServo;
@@ -43,6 +43,11 @@ public class TurretIO {
 
         headingTicks = -turretEncoder.getPosition();
         headingRadiant = headingTicks / TurretConstants.TICKS_PER_RADIANT;
+
+        if (headingRadiant > Math.PI)
+            headingRadiant -= 2 * Math.PI;
+        else if (headingRadiant < -Math.PI)
+            headingRadiant += 2 * Math.PI;
 
         //hallSensorTrigered = UtilsRBL.isInRange(hallSensor.getVoltage(), TurretConstants.hallSensorMinWhenMagnet, TurretConstants.hallSensorTolerance);
 
