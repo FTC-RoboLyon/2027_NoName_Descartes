@@ -1,10 +1,14 @@
 package org.firstinspires.ftc.teamcode.subsystems.ShooterPollen.Flywheel;
 
+import com.acmerobotics.dashboard.config.Config;
+import com.seattlesolvers.solverslib.controller.PIDFController;
+
+@Config
 public class FlywheelConstants {
 
     public static final String FLYWHEEL_MOTOR_NAME = "flywheel";
-    public static double FLYWHEEL_NOMINAL_VOLTAGE = 12.0;
-
+    public static double FLYWHEEL_NOMINAL_VOLTAGE = 12.4;
+    
     public static final double ENCODEUR_MOTOR_RATIO = 1.0;
     public static final double FLYWHEEL_TICKS_PER_ROTATION = 8192.0;
 
@@ -13,7 +17,9 @@ public class FlywheelConstants {
     public static double FLYWHEEL_MOTOR_KD = 1.0; //TUNEME
 
     public static double FLYWHEEL_MOTOR_KV = 1.0; //TUNEME
-    public static double FLYWHEEL_MOTOR_KS = 1.0; //TUNEME
+    public static double FLYWHEEL_MOTOR_KS = 0.335; //TUNEME
+
+    public static double FLYWHEEL_VELOCITY_FILTER_ALPHA = 0.1; //TUNEME
 
     public static double FLYWHEEL_TOLERANCE = 1.0; //TUNEME
 

@@ -26,14 +26,15 @@ public class ShooterTunnning extends OpMode {
     private FeedForwardModel flywheelFeedForward = new FeedForwardModel(FLYWHEEL_MOTOR_KS, FLYWHEEL_MOTOR_KV, 0.0);
 
     public static double flywheelTargetSpeed = 1000; //in RPM
+    public static double flywheelDutycycle = 0.0;
     private boolean isAtTargetSpeed = false;
 
-    public static double FLYWHEEL_MOTOR_KP = 0.0;  //from RPM to duty cycle
-    public static double FLYWHEEL_MOTOR_KI = 0.0; //from RPM to duty cycle
-    public static double FLYWHEEL_MOTOR_KD = 0.0; //from RPM to duty cycle
+    public static double FLYWHEEL_MOTOR_KP = 0.0030;  //from RPM to duty cycle
+    public static double FLYWHEEL_MOTOR_KI = 0.0007; //from RPM to duty cycle
+    public static double FLYWHEEL_MOTOR_KD = 0.00075; //from RPM to duty cycle
 
-    public static double FLYWHEEL_MOTOR_KS = 0.0; //from RPM to duty cycle
-    public static double FLYWHEEL_MOTOR_KV = 0.0; //from RPM to duty cycle
+    public static double FLYWHEEL_MOTOR_KS = 0.335; //from RPM to duty cycle
+    public static double FLYWHEEL_MOTOR_KV = (double) 1/2255 ; //from RPM to duty cycle
 
     public static double FLYWHEEL_TOLERANCE = 0.0; //in RPM
 
@@ -43,7 +44,7 @@ public class ShooterTunnning extends OpMode {
 
     private PidRBL hoodPID = new PidRBL(FLYWHEEL_MOTOR_KP, FLYWHEEL_MOTOR_KI, FLYWHEEL_MOTOR_KD);
 
-    public double hoodTargetAngle = 1000; //in RPM
+    public double hoodTargetAngle = 1000; //in rad
 
     private boolean isAtTargetAngle = false;
     public  double HOOD_KP = 0.0; //from Radiants to duty cycle
@@ -53,6 +54,7 @@ public class ShooterTunnning extends OpMode {
     public  double HOOD_TOLERANCE = 0.0; //in Radiants
 
     private MultipleTelemetry m_Telemetry;
+    private VoltageCompensator voltageCompensator;
 
     @Override
     public void init() {
@@ -61,7 +63,7 @@ public class ShooterTunnning extends OpMode {
         flywheel = new FlywheelIO(hardwareMap, m_Telemetry);
 
         flywheelPID.setGains(FLYWHEEL_MOTOR_KP, FLYWHEEL_MOTOR_KI, FLYWHEEL_MOTOR_KD);
-        flywheelFeedForward.setGains(FLYWHEEL_MOTOR_KS, FLYWHEEL_MOTOR_KV, 0.0);
+        flywheelFeedForward.setGains(FLYWHEEL_MOTOR_KS, FLYWHEEL_MOTOR_KV, 0.0, null);
 
         flywheelPID.setOutputLimits(-1.0, 1.0);
         flywheelFeedForward.setOutputLimits(-1.0, 1.0);
@@ -70,6 +72,7 @@ public class ShooterTunnning extends OpMode {
         hoodPID.setGains(HOOD_KP, HOOD_KI, HOOD_KD);
         hoodPID.setOutputLimits(-1.0, 1.0);
 
+        voltageCompensator = new VoltageCompensator(hardwareMap);
     }
 
     @Override
@@ -77,26 +80,27 @@ public class ShooterTunnning extends OpMode {
         flywheel.update();
         double flywheelSpeed = flywheel.getFlywheelVelocity();
 
+        voltageCompensator.update();
         double voltage = VoltageCompensator.getVoltage();
 
-        if (gamepad1.aWasPressed())
-        {
-            flywheelPID.setGains(FLYWHEEL_MOTOR_KP, FLYWHEEL_MOTOR_KI, FLYWHEEL_MOTOR_KD);
-            flywheelFeedForward.setGains(FLYWHEEL_MOTOR_KS, FLYWHEEL_MOTOR_KV, 0.0);
-        }
-        if (gamepad1.bWasPressed())
-            hoodPID.setGains(HOOD_KP, HOOD_KI, HOOD_KD);
 
+        flywheelPID.setGains(FLYWHEEL_MOTOR_KP, FLYWHEEL_MOTOR_KI, FLYWHEEL_MOTOR_KD);
+        flywheelFeedForward.setGains(FLYWHEEL_MOTOR_KS, FLYWHEEL_MOTOR_KV, 0.0, null);
+
+        double pidOutput = flywheelPID.calculate(flywheelTargetSpeed, flywheelSpeed);
         flywheel.applyPower(
-                flywheelFeedForward.calculate(flywheelSpeed)
-                + flywheelPID.calculate(flywheelTargetSpeed, flywheelSpeed)
-        );
+                flywheelFeedForward.calculate(flywheelTargetSpeed)
+                +pidOutput
+                );
+
+        m_Telemetry.addData( "feedForwardOutput", flywheelFeedForward.calculate(flywheelTargetSpeed));
+        m_Telemetry.addData( "fPIDOutput", pidOutput);
         //hood.setVoltage(hoodPID.calculate(hoodTargetAngle, hood.getHoodAngle()) * (HoodConstants.HOOD_NOMINAL_VOLTAGE/voltage));
 
         isAtTargetSpeed = UtilsRBL.isInRange(flywheelSpeed, flywheelTargetSpeed, FLYWHEEL_TOLERANCE);
         //isAtTargetAngle = UtilsRBL.isInRange(hood.getHoodAngle(), hoodTargetAngle, HOOD_TOLERANCE);
 
-        m_Telemetry.addData(" MY flywheel velocity in RPM", flywheelSpeed);
+        m_Telemetry.addData(" flywheel velocity in RPM", flywheelSpeed);
         m_Telemetry.addLine();
 
         m_Telemetry.addData("flywheel target speed", flywheelTargetSpeed);
