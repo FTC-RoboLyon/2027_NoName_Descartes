@@ -15,6 +15,7 @@ public class LocalizationLimelight implements LocalizationSensor {
     private LLResult latestResult;
 
     private Pose2d EstimatedPos;
+    private Pose3D Last3dEstimatedPos;
 
     private boolean PosEstimatedWithMT2 = false;
     private final String deviceName;
@@ -46,8 +47,8 @@ public class LocalizationLimelight implements LocalizationSensor {
         latestResult = camera.getLatestResult();
         if (latestResult.isValid())
         {
-            Pose3D botPos = latestResult.getBotpose();
-            EstimatedPos = new Pose2d(botPos.getPosition().x, botPos.getPosition().y, botPos.getOrientation().getYaw(AngleUnit.RADIANS));
+            Last3dEstimatedPos = latestResult.getBotpose_MT2();
+            EstimatedPos = new Pose2d(Last3dEstimatedPos.getPosition().x, Last3dEstimatedPos.getPosition().y, Last3dEstimatedPos.getOrientation().getYaw(AngleUnit.RADIANS));
         }
         else
         {
@@ -68,8 +69,8 @@ public class LocalizationLimelight implements LocalizationSensor {
         latestResult = camera.getLatestResult();
         if (latestResult.isValid())
         {
-            Pose3D botPos = latestResult.getBotpose_MT2();
-            EstimatedPos = new Pose2d(botPos.getPosition().x, botPos.getPosition().y, botPos.getOrientation().getYaw(AngleUnit.RADIANS));
+            Last3dEstimatedPos = latestResult.getBotpose_MT2();
+            EstimatedPos = new Pose2d(Last3dEstimatedPos.getPosition().x, Last3dEstimatedPos.getPosition().y, Last3dEstimatedPos.getOrientation().getYaw(AngleUnit.RADIANS));
         }
         else
         {

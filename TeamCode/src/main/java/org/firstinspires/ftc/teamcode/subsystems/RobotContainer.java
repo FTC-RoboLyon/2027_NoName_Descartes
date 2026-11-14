@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.subsystems;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.seattlesolvers.solverslib.command.CommandScheduler;
 import com.seattlesolvers.solverslib.command.button.Button;
@@ -99,7 +100,7 @@ public class RobotContainer{
         drivetrain = new DrivetrainSubsystem(getDrivetrainIO(hmap), getLocalizer(hmap), new Pose2d(),logger ,telemetry);
         frontIntake = new IntakeSubsystem(new IntakeIO(hmap, true));
         backIntake = new IntakeSubsystem(new IntakeIO(hmap, false));
-        camera = new CameraSubsystem(new LocalizationLimelight(hmap, "cam_ille"), this, logger);
+        camera = new CameraSubsystem(hmap.get(Limelight3A.class, "cam_ille"), this, logger, shootParams);
 
         shooterParametersCalculator = new ShooterParametersCalculator( ()-> drivetrain.getCurrentPose(), telemetry);
         shooterSubsystem = new PollenShooterSubsystem(new HoodIO(hmap), new FlywheelIO(hmap), shooterParametersCalculator);
@@ -107,10 +108,6 @@ public class RobotContainer{
         //turret = new TurretSubsystem(hmap, telemetry, shooterParametersCalculator);
 
         voltageCompensator = new VoltageCompensator(hmap);
-
-        CommandScheduler.getInstance().registerSubsystem(shooterSubsystem, frontIntake, backIntake);
-        this.robotMode = robotMode;
-        this.telemetry = telemetry;
     }
 
     // --- Command Based Structure ---
@@ -173,6 +170,11 @@ public class RobotContainer{
         return drivetrain.getCurrentPose();
     }
 
+    public Telemetry getTelemetry()
+    {
+        return telemetry;
+    }
+
     // --- Private methods ---
     private void BindCommands()
     {
@@ -229,6 +231,7 @@ public class RobotContainer{
     //public static TurretSubsystem turret;
     public static VoltageCompensator voltageCompensator;
     public static CameraSubsystem camera;
+    public static ShooterParametersCalculator.ShootParameters shootParams;
 
     // --- IO getters ---
     private DriveIO getDrivetrainIO(HardwareMap hmap)

@@ -25,7 +25,18 @@ public class Constants {
     public static final GamepadKeys.Button TRACK_RED_PUBLIC_CELL = GamepadKeys.Button.LEFT_BUMPER;
     public static final GamepadKeys.Button TRACK_BLUE_OPPOSITE_CELL = GamepadKeys.Button.RIGHT_BUMPER;
     public static final GamepadKeys.Button STOP_TURRET = GamepadKeys.Button.TRIANGLE;
+
     // --- Poses ---
-    public static final Pose2d BLUE_STARTING_POS = new Pose2d(0.0,0.0,0.0);
+    public static final Pose2d BLUE_STARTING_POS = new Pose2d(0.0,0.0,0.0);//TUNEME
     public static final Pose2d RED_STARTING_POS = new Pose2d(0.0,0.0,0.0);
+
+    // --- Field ---
+    // Frame + Hive :
+    public static final Pose2d BLUE_FRAME_CENTRE_POS = new Pose2d(2.1149205,1.7908587,0.0);
+    public static final Pose2d RED_FRAME_CENTRE_POS = new Pose2d(1.4671965,1.7908587,0.0); 
+
+    public static final double FRAME_HEIGHT = 1.1165; //in m
+    public static final double HIVE_ARM_LENGTH = 109.0e-3; //in m
+    public static final double CELL_HEIGHT = 35.55e-3; //in m
+    public static final double PIVOT_HEIGHT_IN_HIVE = 91.12e-3;//in m
 }

@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.subsystems.ShooterParametersCalculator;
 
 import com.seattlesolvers.solverslib.util.InterpLUT;
 
+import org.firstinspires.ftc.LyonLib.kinematics.Pose3d;
 import org.firstinspires.ftc.LyonLib.kinematics.Pose2d;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.subsystems.turret.TurretConstants;
@@ -21,15 +22,16 @@ public class ShooterParametersCalculator {
     //private Pose2d RobotSpeed;
 
 
-    public void setTargetPos(Pose2d pos){shootParam.targetPos = pos;}
-    public Pose2d getTargetPos(){return shootParam.targetPos;}
+    public void setTargetPos(Pose3d pos){shootParam.targetPos = pos;}
+    public Pose3d getTargetPos(){return shootParam.targetPos;}
 
     private InterpLUT flywheelInterpolator = new InterpLUT();
     private InterpLUT hoodInterpolator = new InterpLUT();
 
     public class ShootParameters
     {
-        private Pose2d targetPos = new Pose2d();
+        public Pose3d targetPos = new Pose3d();
+        public double hiveAngle = 0.0;
 
         double xTargetTurret = 0.0;
         double yTargetTurret = 0.0;
