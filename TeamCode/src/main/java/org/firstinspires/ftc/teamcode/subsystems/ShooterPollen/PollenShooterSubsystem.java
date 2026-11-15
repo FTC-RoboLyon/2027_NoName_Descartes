@@ -72,8 +72,8 @@ public class PollenShooterSubsystem extends SubsystemBase {
     public void setWantedState(WantedState wantedState){this.wantedState = wantedState;}
 
 
-    private ControlMode flywheelControlMode = ControlMode.VELOCITY_DUTYCYCLE_PID;
-    private ControlMode hoodControlMode;
+    private ControlMode flywheelControlMode = ControlMode.MANUAL_VELOCITY;
+    private ControlMode hoodControlMode = ControlMode.MANUAL_POSITION;
 
     public ControlMode getFlywheelControlMode() {return flywheelControlMode;}
     public void setFlywheelControlMode(ControlMode flywheelControlMode) {this.flywheelControlMode = flywheelControlMode;}
@@ -152,13 +152,15 @@ public class PollenShooterSubsystem extends SubsystemBase {
                     case PREPARING_SHOOT_OPPOSITE_SIDE:
                     case READY_TO_SHOOT_OPPOSITE_SIDE:
                         hoodIO.setVoltage(
-                                hoodPID.calculateWithRealTime(hoodTargetAngle, hoodIO.getHoodAngle(), System.nanoTime())
+                                hoodPID.calculate(hoodTargetAngle, hoodIO.getHoodAngle())
                         );
                         break;
 
                     default:
                         throw new IllegalStateException("System state isn(t valid");
                 }
+                break;
+            case DISABLED:
                 break;
             default:
                 throw new IllegalStateException("Unsupported Control Mode used for hood");
@@ -176,7 +178,7 @@ public class PollenShooterSubsystem extends SubsystemBase {
 
                 flywheelIO.applyPower(
                         flywheelFeedForward.calculate(flywheelTargetSpeed)
-                                + flywheelPID.calculateWithRealTime(flywheelTargetSpeed, flywheelIO.getFlywheelVelocity(), System.nanoTime())
+                                + flywheelPID.calculate(flywheelTargetSpeed, flywheelIO.getFlywheelVelocity())
                 );
                 break;
             case MANUAL_DUTY_CYCLE:
@@ -203,7 +205,7 @@ public class PollenShooterSubsystem extends SubsystemBase {
                     case READY_TO_SHOOT_OPPOSITE_SIDE:
                         flywheelIO.applyPower(
                                 flywheelFeedForward.calculate(flywheelTargetSpeed)
-                                        + flywheelPID.calculateWithRealTime(flywheelTargetSpeed, flywheelIO.getFlywheelVelocity(), System.nanoTime())
+                                        + flywheelPID.calculate(flywheelTargetSpeed, flywheelIO.getFlywheelVelocity())
                         );
                         break;
 
@@ -211,7 +213,8 @@ public class PollenShooterSubsystem extends SubsystemBase {
                         throw new IllegalStateException("System state isn(t valid");
                 }
                 break;
-
+            case DISABLED:
+                break;
             default:
                 throw new IllegalStateException("Unsupported Control Mode used for hood");
         }

@@ -19,6 +19,7 @@ public class FlywheelIO {
 
     private double lastPos = 0.0;
     private double lastTime = 0.0;
+    private double lastSpeed = 0.0;
     private boolean firstIteration = true;
 
     private double voltage = 0.0;
@@ -45,8 +46,9 @@ public class FlywheelIO {
 
     public void update(){
         calculateFlywheelVelocity();
-
+        telemetry.addData("consigne", flywheelMotor.getPower());
         voltage = VoltageCompensator.getVoltage();
+        telemetry.addData("voltage", voltage);
     }
 
     public void applyPower(double power)
@@ -65,7 +67,7 @@ public class FlywheelIO {
         double currentPos = flywheelMotor.getCurrentPosition();
         double dPos = currentPos - lastPos; // in ticks
 
-        double actualTime = (double) System.nanoTime() / 1_000_000_000; // in seconds
+        double actualTime = System.nanoTime() / 1.0e9; // in seconds
         double dTime = actualTime - lastTime;
 
         if(firstIteration)
@@ -77,16 +79,11 @@ public class FlywheelIO {
 
         double tickPerSeconds = dPos / dTime; // in ticks per second
         flywheelVelocity = tickPerSeconds / FlywheelConstants.FLYWHEEL_TICKS_PER_ROTATION * 60; //In RPM
+        flywheelVelocity = FlywheelConstants.FLYWHEEL_VELOCITY_FILTER_ALPHA * flywheelVelocity + (1 - FlywheelConstants.FLYWHEEL_VELOCITY_FILTER_ALPHA) * lastSpeed;
 
         lastPos = currentPos;
         lastTime = actualTime;
+        lastSpeed = flywheelVelocity;
 
-        telemetry.addData("current flywheel ticks pos", currentPos);
-        telemetry.addData("flywheel delta ticks pos", dPos);
-
-        telemetry.addData("current time", actualTime);
-        telemetry.addData("current delta time", dTime);
-
-        telemetry.addData("COM QUALCORE flywheel velocity", flywheelMotor.getVelocity()/ FlywheelConstants.FLYWHEEL_TICKS_PER_ROTATION * 60);
     }
 }
