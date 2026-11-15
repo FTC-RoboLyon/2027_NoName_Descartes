@@ -123,8 +123,8 @@ public class RobotContainer{
             frontIntake.SetControlMode(ControlMode.MANUAL_VOLTAGE);
             backIntake.SetControlMode(ControlMode.MANUAL_VOLTAGE);
 
-            shooterSubsystem.setFlywheelControlMode(ControlMode.VELOCITY_DUTYCYCLE_PID_FF);
-            shooterSubsystem.setHoodControlMode(ControlMode.POSITION_DUTYCYCLE_PID);
+            shooterSubsystem.setFlywheelControlMode(ControlMode.MANUAL_VELOCITY);
+            shooterSubsystem.setHoodControlMode(ControlMode.DISABLED);
             shooterSubsystem.setWantedState(PollenShooterSubsystem.WantedState.STAND_BY);
             //turret.setWantedState(TurretSubsystem.WantedState.STAND_BY);
 
@@ -185,8 +185,11 @@ public class RobotContainer{
         frontIntake.ConfigureManualSupplier(()-> VictorGamepad.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER));
         backIntake.ConfigureManualSupplier(()-> VictorGamepad.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER));
 
-        //shooterSubsystem.setFlywheelManualVoltageSupplier(() -> VictorGamepad.getLeftY()); Tune this like you want but you have to give a double supplier that return duty cycle
-        //shooterSubsystem.setSuppliersManualSpeedSuppliers(); it's up to you
+        shooterSubsystem.setFlywheelManualVoltageSupplier(() -> VictorGamepad.getLeftY());
+        shooterSubsystem.setSuppliersManualSpeedSuppliers(
+                ()-> VictorGamepad.getButton(GamepadKeys.Button.CROSS),
+                ()-> VictorGamepad.getButton(GamepadKeys.Button.CIRCLE),
+                ()-> VictorGamepad.getButton(GamepadKeys.Button.TRIANGLE));
 
         Button PI2_CCW = new GamepadButton(AlexisGamepad,Constants.PI2_CCW_BUTTON)
                 .whenPressed(new ChangeHeadingTargetCmd(drivetrain, Math.PI/2.0, true));

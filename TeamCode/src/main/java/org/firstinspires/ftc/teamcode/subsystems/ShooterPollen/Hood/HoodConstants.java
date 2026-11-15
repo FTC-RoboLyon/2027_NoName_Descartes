@@ -1,6 +1,11 @@
 package org.firstinspires.ftc.teamcode.subsystems.ShooterPollen.Hood;
 
+import org.firstinspires.ftc.LyonLib.control.ControlMode;
+
 public class HoodConstants {
+
+    public static final ControlMode MainConntrolMode = ControlMode.POSITION_DUTYCYCLE_PID;
+    public static final ControlMode EmergencyConntrolMode = ControlMode.MANUAL_POSITION;
 
     public static final String HOOD_SERVO_NAME = "hood";
     public static final String HOOD_ENCODEUR_NAME = "hoodEncodeur";
