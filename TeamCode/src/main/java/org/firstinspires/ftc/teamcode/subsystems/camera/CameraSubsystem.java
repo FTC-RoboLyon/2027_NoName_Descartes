@@ -3,8 +3,6 @@ package org.firstinspires.ftc.teamcode.subsystems.camera;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.hardware.limelightvision.LLResult;
 
-import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
-
 import com.seattlesolvers.solverslib.command.SubsystemBase;
 
 import org.firstinspires.ftc.LyonLib.kinematics.Pose2d;
@@ -13,8 +11,7 @@ import org.firstinspires.ftc.LyonLib.logging.RealtimeLogger;
 
 import org.firstinspires.ftc.teamcode.subsystems.RobotContainer;
 import org.firstinspires.ftc.teamcode.subsystems.Constants;
-import org.firstinspires.ftc.teamcode.subsystems.ShooterParametersCalculator.ShooterParametersCalculator.ShootParameters;
-import org.firstinspires.ftc.teamcode.subsystems.localization.LocalizationLimelight;
+import org.firstinspires.ftc.teamcode.subsystems.shooterParametersCalculator.ShooterParametersCalculator.ShootParameters;
 
 public class CameraSubsystem extends SubsystemBase {
 

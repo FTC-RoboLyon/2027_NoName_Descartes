@@ -1,12 +1,10 @@
-package org.firstinspires.ftc.teamcode.subsystems.ShooterPollen.Flywheel;
+package org.firstinspires.ftc.teamcode.subsystems.shooter.Flywheel;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.LyonLib.control.FeedForwardModel;
 import org.firstinspires.ftc.LyonLib.utils.VoltageCompensator;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 

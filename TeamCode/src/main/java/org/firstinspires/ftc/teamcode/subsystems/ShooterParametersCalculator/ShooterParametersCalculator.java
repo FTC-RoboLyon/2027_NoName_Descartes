@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.subsystems.ShooterParametersCalculator;
+package org.firstinspires.ftc.teamcode.subsystems.shooterParametersCalculator;
 
 import com.seattlesolvers.solverslib.util.InterpLUT;
 
@@ -6,7 +6,7 @@ import org.firstinspires.ftc.LyonLib.kinematics.Pose3d;
 import org.firstinspires.ftc.LyonLib.kinematics.Pose2d;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.subsystems.turret.TurretConstants;
-import org.firstinspires.ftc.teamcode.subsystems.shooterNectarPollen.Hood.HoodConstants;
+import org.firstinspires.ftc.teamcode.subsystems.shooter.Hood.HoodConstants;
 
 import java.util.function.Supplier;
 

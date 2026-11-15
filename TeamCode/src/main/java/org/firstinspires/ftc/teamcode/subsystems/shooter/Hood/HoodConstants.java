@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.subsystems.ShooterPollen.Hood;
+package org.firstinspires.ftc.teamcode.subsystems.shooter.Hood;
 
 import org.firstinspires.ftc.LyonLib.control.ControlMode;
 

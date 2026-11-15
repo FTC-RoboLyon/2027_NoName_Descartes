@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.subsystems.ShooterPollen.Flywheel;
+package org.firstinspires.ftc.teamcode.subsystems.shooter.Flywheel;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.seattlesolvers.solverslib.controller.PIDFController;

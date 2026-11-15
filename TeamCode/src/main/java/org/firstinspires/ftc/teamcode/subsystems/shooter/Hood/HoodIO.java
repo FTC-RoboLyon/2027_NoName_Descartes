@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.subsystems.ShooterPollen.Hood;
+package org.firstinspires.ftc.teamcode.subsystems.shooter.Hood;
 
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -6,7 +6,6 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.seattlesolvers.solverslib.hardware.motors.Motor;
 
 import org.firstinspires.ftc.LyonLib.utils.VoltageCompensator;
-import org.firstinspires.ftc.teamcode.subsystems.ShooterPollen.Flywheel.FlywheelConstants;
 
 public class HoodIO {
     private CRServo hoodServo;

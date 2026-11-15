@@ -2,11 +2,11 @@ package org.firstinspires.ftc.teamcode.commands;
 
 import com.seattlesolvers.solverslib.command.CommandBase;
 
-import org.firstinspires.ftc.teamcode.subsystems.ShooterPollen.PollenShooterSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.shooter.ShooterSubsystem;
 public class ChangeShooterWantedState extends CommandBase {
-    private PollenShooterSubsystem shooter;
-    private PollenShooterSubsystem.WantedState wantedState;
-    public ChangeShooterWantedState (PollenShooterSubsystem shooter, PollenShooterSubsystem.WantedState wantedState)
+    private ShooterSubsystem shooter;
+    private ShooterSubsystem.WantedState wantedState;
+    public ChangeShooterWantedState (ShooterSubsystem shooter, ShooterSubsystem.WantedState wantedState)
     {
         this.shooter = shooter;
         this.wantedState = wantedState;
