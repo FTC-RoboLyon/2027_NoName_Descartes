@@ -31,7 +31,12 @@ public class TurretIO {
 
         turretServo.setDirection(DcMotorSimple.Direction.REVERSE);
         //turretMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
+        //change
+        //second change
+        //please notice me
+        //this time is the one
+        //mabe this time ?
+        //Finally ?
         //turretMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         //turretMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
