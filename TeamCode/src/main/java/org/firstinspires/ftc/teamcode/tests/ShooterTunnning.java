@@ -5,17 +5,12 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.LyonLib.control.FeedForwardModel;
 import org.firstinspires.ftc.LyonLib.control.PidRBL;
 import org.firstinspires.ftc.LyonLib.utils.UtilsRBL;
 import org.firstinspires.ftc.LyonLib.utils.VoltageCompensator;
-import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.subsystems.ShooterPollen.Flywheel.FlywheelConstants;
-import org.firstinspires.ftc.teamcode.subsystems.ShooterPollen.Flywheel.FlywheelIO;
-import org.firstinspires.ftc.teamcode.subsystems.ShooterPollen.Hood.HoodConstants;
-import org.firstinspires.ftc.teamcode.subsystems.ShooterPollen.Hood.HoodIO;
+import org.firstinspires.ftc.teamcode.subsystems.shooter.Flywheel.FlywheelIO;
 
 @Config
 @TeleOp

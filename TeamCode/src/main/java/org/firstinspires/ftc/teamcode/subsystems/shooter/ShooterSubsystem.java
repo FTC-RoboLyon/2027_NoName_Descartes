@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.subsystems.ShooterPollen;
+package org.firstinspires.ftc.teamcode.subsystems.shooter;
 
 import com.seattlesolvers.solverslib.command.SubsystemBase;
 
@@ -6,16 +6,16 @@ import org.firstinspires.ftc.LyonLib.control.ControlMode;
 import org.firstinspires.ftc.LyonLib.control.FeedForwardModel;
 import org.firstinspires.ftc.LyonLib.control.PidRBL;
 import org.firstinspires.ftc.LyonLib.utils.UtilsRBL;
-import org.firstinspires.ftc.teamcode.subsystems.ShooterParametersCalculator.ShooterParametersCalculator;
-import org.firstinspires.ftc.teamcode.subsystems.ShooterPollen.Flywheel.FlywheelConstants;
-import org.firstinspires.ftc.teamcode.subsystems.ShooterPollen.Flywheel.FlywheelIO;
-import org.firstinspires.ftc.teamcode.subsystems.ShooterPollen.Hood.HoodIO;
-import org.firstinspires.ftc.teamcode.subsystems.ShooterPollen.Hood.HoodConstants;
+import org.firstinspires.ftc.teamcode.subsystems.shooterParametersCalculator.ShooterParametersCalculator;
+import org.firstinspires.ftc.teamcode.subsystems.shooter.Flywheel.FlywheelConstants;
+import org.firstinspires.ftc.teamcode.subsystems.shooter.Flywheel.FlywheelIO;
+import org.firstinspires.ftc.teamcode.subsystems.shooter.Hood.HoodIO;
+import org.firstinspires.ftc.teamcode.subsystems.shooter.Hood.HoodConstants;
 
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
-public class PollenShooterSubsystem extends SubsystemBase {
+public class ShooterSubsystem extends SubsystemBase {
 
     private HoodIO hoodIO;
     private FlywheelIO flywheelIO;
@@ -66,7 +66,7 @@ public class PollenShooterSubsystem extends SubsystemBase {
     }
 
     private WantedState wantedState = WantedState.STAND_BY;
-    private SystemState systemState = PollenShooterSubsystem.SystemState.IDLE;
+    private SystemState systemState = ShooterSubsystem.SystemState.IDLE;
 
     public SystemState getSystemState() {return systemState;}
     public void setWantedState(WantedState wantedState){this.wantedState = wantedState;}
@@ -82,7 +82,7 @@ public class PollenShooterSubsystem extends SubsystemBase {
     public void setHoodControlMode(ControlMode hoodControlMode) {this.hoodControlMode = hoodControlMode;}
 
 
-    public PollenShooterSubsystem(HoodIO hoodIO, FlywheelIO flywheelIO, ShooterParametersCalculator shooterParametersCalculator)
+    public ShooterSubsystem(HoodIO hoodIO, FlywheelIO flywheelIO, ShooterParametersCalculator shooterParametersCalculator)
     {
         this.hoodIO = hoodIO;
         this.flywheelIO = flywheelIO;

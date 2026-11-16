@@ -3,12 +3,12 @@ package org.firstinspires.ftc.teamcode.commands;
 import com.seattlesolvers.solverslib.command.CommandBase;
 
 import org.firstinspires.ftc.LyonLib.control.ControlMode;
-import org.firstinspires.ftc.teamcode.subsystems.ShooterPollen.PollenShooterSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.shooter.ShooterSubsystem;
 
 public class ChangeHoodControlMode extends CommandBase {
-    private PollenShooterSubsystem shooter;
+    private ShooterSubsystem shooter;
     private ControlMode controlMode;
-    public ChangeHoodControlMode (PollenShooterSubsystem shooter, ControlMode controlMode)
+    public ChangeHoodControlMode (ShooterSubsystem shooter, ControlMode controlMode)
     {
         this.shooter = shooter;
         this.controlMode = controlMode;
