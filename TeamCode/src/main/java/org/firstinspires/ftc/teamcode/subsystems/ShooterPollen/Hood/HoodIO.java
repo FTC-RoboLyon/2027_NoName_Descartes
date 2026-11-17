@@ -8,7 +8,6 @@ import com.seattlesolvers.solverslib.hardware.motors.Motor;
 
 import org.firstinspires.ftc.LyonLib.utils.UtilsRBL;
 import org.firstinspires.ftc.LyonLib.utils.VoltageCompensator;
-import org.firstinspires.ftc.teamcode.subsystems.ShooterPollen.Flywheel.FlywheelConstants;
 
 public class HoodIO {
     private Servo hoodServo;

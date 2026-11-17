@@ -25,8 +25,8 @@ public class IntakeIO {
 
     private double getVoltageCompensed(double voltage)
     {
-        double output = voltage * VoltageCompensator.getVoltage() / intakeConstants.VOLTAGE_COMPENSATION;
-        if (Math.abs(output) > 1)
+        double output = voltage * intakeConstants.VOLTAGE_COMPENSATION / VoltageCompensator.getVoltage();
+        if (Math.abs(output) > 1.0)
         {
             output /= Math.abs(output);
         }

@@ -49,6 +49,11 @@ public class IntakeSubsystem extends SubsystemBase {
         this.powerSupplier = powerSupplier;
     }
 
+        public SystemState getSystemState()
+    {
+        return systemState;
+    }
+
     @Override
     public void periodic()
     {

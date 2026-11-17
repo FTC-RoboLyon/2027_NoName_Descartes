@@ -24,17 +24,16 @@ import org.firstinspires.ftc.LyonLib.drive.MecanumDriveIO;
 
 import org.firstinspires.ftc.teamcode.commands.ChangeHeadingTargetCmd;
 import org.firstinspires.ftc.teamcode.commands.OverrideDrivetrainInputsCmd;
-import org.firstinspires.ftc.teamcode.subsystems.ShooterParametersCalculator.ShooterParametersCalculator;
-import org.firstinspires.ftc.teamcode.subsystems.ShooterPollen.Flywheel.FlywheelIO;
-import org.firstinspires.ftc.teamcode.subsystems.ShooterPollen.Hood.HoodIO;
-import org.firstinspires.ftc.teamcode.subsystems.ShooterPollen.PollenShooterSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.shooterParametersCalculator.ShooterParametersCalculator;
+import org.firstinspires.ftc.teamcode.subsystems.shooter.Flywheel.FlywheelIO;
+import org.firstinspires.ftc.teamcode.subsystems.shooter.Hood.HoodIO;
+import org.firstinspires.ftc.teamcode.subsystems.shooter.ShooterSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.camera.CameraSubsystem;
-import org.firstinspires.ftc.teamcode.subsystems.drivetrain.DcMotorWheelIO;
+import org.firstinspires.ftc.teamcode.subsystems.drivetrain.CRServoWheelIO;
 import org.firstinspires.ftc.teamcode.subsystems.drivetrain.DrivetrainSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.drivetrain.DrivetrainConstants;
 import org.firstinspires.ftc.teamcode.subsystems.intake.IntakeIO;
 import org.firstinspires.ftc.teamcode.subsystems.intake.IntakeSubsystem;
-import org.firstinspires.ftc.teamcode.subsystems.localization.LocalizationLimelight;
 import org.firstinspires.ftc.teamcode.subsystems.localization.OTOS;
 import org.firstinspires.ftc.teamcode.subsystems.localization.OdometryWithPinpoint;
 
@@ -103,7 +102,7 @@ public class RobotContainer{
         camera = new CameraSubsystem(hmap.get(Limelight3A.class, "cam_ille"), this, logger, shootParams);
 
         shooterParametersCalculator = new ShooterParametersCalculator( ()-> drivetrain.getCurrentPose(), telemetry);
-        shooterSubsystem = new PollenShooterSubsystem(new HoodIO(hmap), new FlywheelIO(hmap), shooterParametersCalculator);
+        shooterSubsystem = new ShooterSubsystem(new HoodIO(hmap), new FlywheelIO(hmap), shooterParametersCalculator);
 
         //turret = new TurretSubsystem(hmap, telemetry, shooterParametersCalculator);
 
@@ -120,9 +119,9 @@ public class RobotContainer{
             frontIntake.SetControlMode(ControlMode.MANUAL_VOLTAGE);
             backIntake.SetControlMode(ControlMode.MANUAL_VOLTAGE);
 
-            shooterSubsystem.setFlywheelControlMode(ControlMode.MANUAL_VELOCITY);
-            shooterSubsystem.setHoodControlMode(ControlMode.DISABLED);
-            shooterSubsystem.setWantedState(PollenShooterSubsystem.WantedState.STAND_BY);
+            shooterSubsystem.setFlywheelControlMode(ControlMode.VELOCITY_DUTYCYCLE_PID_FF);
+            shooterSubsystem.setHoodControlMode(ControlMode.POSITION_DUTYCYCLE_PID);
+            shooterSubsystem.setWantedState(ShooterSubsystem.WantedState.STAND_BY);
             //turret.setWantedState(TurretSubsystem.WantedState.STAND_BY);
 
 
@@ -221,7 +220,6 @@ public class RobotContainer{
 //
         //Button STOP_TURRET = new GamepadButton(VictorGamepad, Constants.STOP_TURRET)
         //        .whenPressed(new ChangeTurretTarget(turret, TurretSubsystem.WantedState.STAND_BY));
-//
     }
 
     // --- Subsystems ---
@@ -229,7 +227,7 @@ public class RobotContainer{
     public static DrivetrainSubsystem drivetrain;
     public static IntakeSubsystem frontIntake, backIntake;
     public static ShooterParametersCalculator shooterParametersCalculator;
-    public static PollenShooterSubsystem shooterSubsystem;
+    public static ShooterSubsystem shooterSubsystem;
 
     //public static TurretSubsystem turret;
     public static VoltageCompensator voltageCompensator;
@@ -243,10 +241,10 @@ public class RobotContainer{
                                                             DrivetrainConstants.WHEEL_BASE_METERS);
 
         return new MecanumDriveIO(
-                new DcMotorWheelIO(hmap, DrivetrainConstants.FRONT_LEFT_NAME, DrivetrainConstants.FRONT_LEFT_REVERSED),
-                new DcMotorWheelIO(hmap, DrivetrainConstants.FRONT_RIGHT_NAME, DrivetrainConstants.FRONT_RIGHT_REVERSED),
-                new DcMotorWheelIO(hmap, DrivetrainConstants.REAR_LEFT_NAME, DrivetrainConstants.REAR_LEFT_REVERSED),
-                new DcMotorWheelIO(hmap, DrivetrainConstants.REAR_RIGHT_NAME, DrivetrainConstants.REAR_RIGHT_REVERSED),
+                new CRServoWheelIO(hmap, DrivetrainConstants.FRONT_LEFT_NAME, DrivetrainConstants.FRONT_LEFT_REVERSED),
+                new CRServoWheelIO(hmap, DrivetrainConstants.FRONT_RIGHT_NAME, DrivetrainConstants.FRONT_RIGHT_REVERSED),
+                new CRServoWheelIO(hmap, DrivetrainConstants.REAR_LEFT_NAME, DrivetrainConstants.REAR_LEFT_REVERSED),
+                new CRServoWheelIO(hmap, DrivetrainConstants.REAR_RIGHT_NAME, DrivetrainConstants.REAR_RIGHT_REVERSED),
                 kinematics, DrivetrainConstants.MAX_WHEEL_SPEED_MPS);
     }
 
