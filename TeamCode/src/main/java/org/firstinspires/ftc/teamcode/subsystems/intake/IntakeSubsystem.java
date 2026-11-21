@@ -12,17 +12,23 @@ public class IntakeSubsystem extends SubsystemBase {
 
     DoubleSupplier powerSupplier;
 
-    private double motorPower = 0.0;
+    private double frontMotorPower = 0.0;
+    private double backMotorPower = 0.0;
+
     public enum WantedState
     {
         STAND_BY,
-        INTAKE
+        FRONT_INTAKE,
+        BACK_INTAKE,
+        CRAZY_INTAKING
     }
 
     public enum SystemState
     {
         IDLE,
-        INTAKING
+        FRONT_INTAKING,
+        BACK_INTAKING,
+        EATING_BATTERY_POWER
     }
 
     private WantedState wantedState = WantedState.STAND_BY;
@@ -34,7 +40,7 @@ public class IntakeSubsystem extends SubsystemBase {
         this.intakeIO = intakeIO;
     }
 
-    public void SetControlMode (ControlMode mode)
+    public void SetControlMode(ControlMode mode)
     {
         this.controlMode = mode;
     }
@@ -65,28 +71,43 @@ public class IntakeSubsystem extends SubsystemBase {
         switch(controlMode)
         {
             case DISABLED:
-                motorPower = 0.0;
+                frontMotorPower = 0.0;
+                backMotorPower = 0.0;
                 break;
 
             case VOLTAGE:
                 switch(systemState)
                 {
                     case IDLE:
-                        motorPower = intakeConstants.REST;
+                        frontMotorPower = IntakeConstants.REST;
+                        backMotorPower = IntakeConstants.REST;
                         break;
 
-                    case INTAKING:
-                        motorPower = intakeConstants.INTAKE_POWER;
+                    case FRONT_INTAKING:
+                        frontMotorPower = IntakeConstants.INTAKE_POWER;
+                        backMotorPower = IntakeConstants.REST;
+                        break;
+
+                    case BACK_INTAKING:
+                        frontMotorPower = IntakeConstants.REST;
+                        backMotorPower = IntakeConstants.INTAKE_POWER;
+                        break;
+
+                    case EATING_BATTERY_POWER:
+                        frontMotorPower = IntakeConstants.INTAKE_POWER;
+                        backMotorPower = IntakeConstants.INTAKE_POWER;
                         break;
 
                     default:
                         throw new IllegalStateException("Can't run Intake state machine with an unknown systemState");
                 }
+                break;
 
             case MANUAL_VOLTAGE:
                 if (powerSupplier != null)
                 {
-                    motorPower = powerSupplier.getAsDouble();
+                    frontMotorPower = powerSupplier.getAsDouble();
+                    backMotorPower = powerSupplier.getAsDouble();
                 }
                 break;
 
@@ -94,7 +115,7 @@ public class IntakeSubsystem extends SubsystemBase {
                 throw new IllegalStateException("Unsupported Control Mode used for intake");
         }
 
-        intakeIO.SetPower(motorPower);
+        intakeIO.SetPower(frontMotorPower, backMotorPower);
     }
 
     public void RunStateMachine()
@@ -105,8 +126,16 @@ public class IntakeSubsystem extends SubsystemBase {
                 systemState = SystemState.IDLE;
                 break;
 
-            case INTAKE:
-                systemState = SystemState.INTAKING;
+            case FRONT_INTAKE:
+                systemState = SystemState.FRONT_INTAKING;
+                break;
+
+            case BACK_INTAKE:
+                systemState = SystemState.BACK_INTAKING;
+                break;
+
+            case CRAZY_INTAKING:
+                systemState = SystemState.EATING_BATTERY_POWER;
                 break;
 
             default:
@@ -118,7 +147,9 @@ public class IntakeSubsystem extends SubsystemBase {
             case IDLE:
                 break;
 
-            case INTAKING:
+            case FRONT_INTAKING:
+            case BACK_INTAKING:
+            case EATING_BATTERY_POWER:
                 //TODO: stop when 3 ball
                 break;
 

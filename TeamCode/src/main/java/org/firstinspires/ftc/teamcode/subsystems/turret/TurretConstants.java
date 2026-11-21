@@ -3,9 +3,14 @@ package org.firstinspires.ftc.teamcode.subsystems.turret;
 import com.acmerobotics.dashboard.config.Config;
 
 import org.firstinspires.ftc.LyonLib.kinematics.Pose2d;
+import org.firstinspires.ftc.LyonLib.control.ControlMode;
 import org.firstinspires.ftc.teamcode.subsystems.localization.localizationConstants;
 @Config
 public class TurretConstants {
+    
+    public static final ControlMode MainControlMode = ControlMode.POSITION_DUTYCYCLE_PID;
+    public static final ControlMode EmergencyControlMode = ControlMode.DISABLED; //TODO : change to a real one
+
     public static final String TURRET_NAME = "turret";
     public static final String HALL_SENSOR_NAME = "hallSensor";
     public static final Pose2d bluePublicCellePos = new Pose2d(localizationConstants.BlueCentreHive.xMeters, localizationConstants.BlueCentreHive.yMeters - localizationConstants.DiffWhenHigh.yMeters,0.0 ),

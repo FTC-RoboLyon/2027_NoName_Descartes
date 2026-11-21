@@ -1,17 +1,15 @@
 package org.firstinspires.ftc.teamcode.teleops;
 
-import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
-import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import com.qualcomm.robotcore.hardware.CRServoImpl;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.seattlesolvers.solverslib.gamepad.GamepadEx;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.LyonLib.utils.GamepadExEx;
 import org.firstinspires.ftc.teamcode.subsystems.RobotContainer;
 
 
@@ -36,7 +34,7 @@ public class TestTeleopV1 extends OpMode{
     public void init()
     {
         robotContainer = new RobotContainer(telemetry,
-                new GamepadEx(gamepad1), new GamepadEx(gamepad2), RobotContainer.RobotMode.TELEOP_RED);
+                new GamepadExEx(gamepad1), new GamepadExEx(gamepad2), RobotContainer.RobotMode.TELEOP_RED);
         robotContainer.initializeSubsystems(hardwareMap);
         robotContainer.init();
 

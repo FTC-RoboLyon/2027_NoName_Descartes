@@ -7,13 +7,13 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.seattlesolvers.solverslib.command.CommandScheduler;
 import com.seattlesolvers.solverslib.command.button.Button;
 import com.seattlesolvers.solverslib.command.button.GamepadButton;
-import com.seattlesolvers.solverslib.gamepad.GamepadEx;
 import com.seattlesolvers.solverslib.gamepad.GamepadKeys;
 
 import org.firstinspires.ftc.LyonLib.control.ControlMode;
 import org.firstinspires.ftc.LyonLib.kinematics.Pose2d;
 import org.firstinspires.ftc.LyonLib.localization.MecanumLocalizer;
 import org.firstinspires.ftc.LyonLib.utils.VoltageCompensator;
+import org.firstinspires.ftc.LyonLib.utils.GamepadExEx;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 import org.firstinspires.ftc.LyonLib.drive.DriveIO;
@@ -56,10 +56,10 @@ public class RobotContainer{
 
     private WpilogFileLogger logger = WpilogFileLogger.inDirectory("/sdcard/FIRST/RBLLogs");
     private RobotMode robotMode;
-    private GamepadEx AlexisGamepad, VictorGamepad;
+    private GamepadExEx AlexisGamepad, VictorGamepad;
     private Telemetry telemetry;
 
-    public RobotContainer(Telemetry telemetry, GamepadEx gamepad1, GamepadEx gamepad2, RobotMode robotMode)
+    public RobotContainer(Telemetry telemetry, GamepadExEx gamepad1, GamepadExEx gamepad2, RobotMode robotMode)
     {
         if (robotMode != RobotMode.TELEOP_BLUE && robotMode != RobotMode.TELEOP_RED)
         {
@@ -97,8 +97,7 @@ public class RobotContainer{
     public void initializeSubsystems(HardwareMap hmap)
     {
         drivetrain = new DrivetrainSubsystem(getDrivetrainIO(hmap), getLocalizer(hmap), new Pose2d(),logger ,telemetry);
-        frontIntake = new IntakeSubsystem(new IntakeIO(hmap, true));
-        backIntake = new IntakeSubsystem(new IntakeIO(hmap, false));
+        intake = new IntakeSubsystem(new IntakeIO(hmap));
         camera = new CameraSubsystem(hmap.get(Limelight3A.class, "cam_ille"), this, logger, shootParams);
 
         shooterParametersCalculator = new ShooterParametersCalculator( ()-> drivetrain.getCurrentPose(), telemetry);
@@ -116,8 +115,7 @@ public class RobotContainer{
         {
             drivetrain.setWantedMode(DrivetrainSubsystem.DriveMode.FRICTION_NEGLECTED);
 
-            frontIntake.SetControlMode(ControlMode.MANUAL_VOLTAGE);
-            backIntake.SetControlMode(ControlMode.MANUAL_VOLTAGE);
+            intake.SetControlMode(ControlMode.MANUAL_VOLTAGE);
 
             shooterSubsystem.setFlywheelControlMode(ControlMode.VELOCITY_DUTYCYCLE_PID_FF);
             shooterSubsystem.setHoodControlMode(ControlMode.POSITION_DUTYCYCLE_PID);
@@ -149,8 +147,7 @@ public class RobotContainer{
     public void end()
     {
         //turret.setWantedState(TurretSubsystem.WantedState.STAND_BY);
-        backIntake.SetControlMode(ControlMode.DISABLED);
-        frontIntake.SetControlMode(ControlMode.DISABLED);
+        intake.SetControlMode(ControlMode.DISABLED);
         drivetrain.setWantedMode(DrivetrainSubsystem.DriveMode.DISABLE);
 
 
@@ -183,8 +180,7 @@ public class RobotContainer{
                 () -> -AlexisGamepad.getLeftX(),
                 () -> -AlexisGamepad.getRightX() + AlexisGamepad.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) - AlexisGamepad.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER));
 
-        frontIntake.ConfigureManualSupplier(()-> VictorGamepad.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER));
-        backIntake.ConfigureManualSupplier(()-> VictorGamepad.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER));
+        intake.ConfigureManualSupplier(()-> VictorGamepad.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER));
 
         shooterSubsystem.setFlywheelManualVoltageSupplier(() -> VictorGamepad.getLeftY());
         shooterSubsystem.setSuppliersManualSpeedSuppliers(
@@ -225,7 +221,7 @@ public class RobotContainer{
     // --- Subsystems ---
 
     public static DrivetrainSubsystem drivetrain;
-    public static IntakeSubsystem frontIntake, backIntake;
+    public static IntakeSubsystem intake;
     public static ShooterParametersCalculator shooterParametersCalculator;
     public static ShooterSubsystem shooterSubsystem;
 

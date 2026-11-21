@@ -3,8 +3,7 @@ package org.firstinspires.ftc.teamcode.teleops;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import com.seattlesolvers.solverslib.gamepad.GamepadEx;
-
+import org.firstinspires.ftc.LyonLib.utils.GamepadExEx;
 import org.firstinspires.ftc.teamcode.subsystems.RobotContainer;
 
 
@@ -16,7 +15,7 @@ public class MainTeleop extends OpMode{
     public void init()
     {
         robotContainer = new RobotContainer(telemetry,
-                new GamepadEx(gamepad1), new GamepadEx(gamepad2), RobotContainer.RobotMode.TELEOP_RED);
+                new GamepadExEx(gamepad1), new GamepadExEx(gamepad2), RobotContainer.RobotMode.TELEOP_RED);
 
         robotContainer.initializeSubsystems(hardwareMap);
         robotContainer.init();

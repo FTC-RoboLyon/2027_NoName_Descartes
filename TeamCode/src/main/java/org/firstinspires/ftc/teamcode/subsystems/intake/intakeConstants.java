@@ -4,7 +4,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.LyonLib.control.ControlMode;
 
-public final class intakeConstants {
+public final class IntakeConstants {
     public final static ControlMode MainControlMode = ControlMode.DUTY_CYCLE;
     public final static ControlMode EmergencyControlMode = ControlMode.MANUAL_DUTY_CYCLE;
 
