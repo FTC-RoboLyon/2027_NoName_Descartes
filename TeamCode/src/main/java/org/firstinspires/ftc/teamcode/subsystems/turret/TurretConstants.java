@@ -13,10 +13,7 @@ public class TurretConstants {
 
     public static final String TURRET_NAME = "turret";
     public static final String HALL_SENSOR_NAME = "hallSensor";
-    public static final Pose2d bluePublicCellePos = new Pose2d(localizationConstants.BlueCentreHive.xMeters, localizationConstants.BlueCentreHive.yMeters - localizationConstants.DiffWhenHigh.yMeters,0.0 ),
-            blueOppositeCellPos = new Pose2d(localizationConstants.BlueCentreHive.xMeters, localizationConstants.BlueCentreHive.yMeters + localizationConstants.DiffWhenHigh.yMeters,0.0 ),
-            redPublicCellPos = new Pose2d(localizationConstants.RedCentreHive.xMeters, localizationConstants.RedCentreHive.yMeters - localizationConstants.DiffWhenHigh.yMeters, 0.0),
-            redOppositeCellPos= new Pose2d(localizationConstants.RedCentreHive.xMeters, localizationConstants.RedCentreHive.yMeters + localizationConstants.DiffWhenHigh.yMeters, 0.0);
+    
     public static Pose2d publicSideCenter = new Pose2d(); //TUNEME
     public static Pose2d oppositeSideCenter = new Pose2d(); //TUNEME
 

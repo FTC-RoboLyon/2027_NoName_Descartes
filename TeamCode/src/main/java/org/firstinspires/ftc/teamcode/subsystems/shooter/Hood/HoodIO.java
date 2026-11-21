@@ -1,20 +1,15 @@
 package org.firstinspires.ftc.teamcode.subsystems.shooter.Hood;
 
-import com.qualcomm.robotcore.hardware.CRServo;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.seattlesolvers.solverslib.hardware.motors.Motor;
+import com.qualcomm.robotcore.hardware.Servo;
 
-import org.firstinspires.ftc.LyonLib.utils.VoltageCompensator;
+import org.firstinspires.ftc.LyonLib.utils.UtilsRBL;
 
 public class HoodIO {
-    private CRServo hoodServo;
-    private Motor.Encoder hoodEncodeur;
+    private Servo hoodServo;
 
     private double hoodAngle = 0.0;
-    private double hoodPosTick = 0.0;
     private double hoodServoPower = 0.0;
-    private boolean isOutOfRange = false;
 
     private double voltage = 0.0;
 
@@ -22,28 +17,44 @@ public class HoodIO {
 
     public HoodIO (HardwareMap hmap)
     {
-        hoodServo = hmap.get(CRServo.class, HoodConstants.HOOD_SERVO_NAME);
+        hoodServo = hmap.get(Servo.class, HoodConstants.HOOD_SERVO_NAME);
 
-        hoodEncodeur = hmap.get(Motor.Encoder.class, HoodConstants.HOOD_ENCODEUR_NAME);
+        //hoodEncodeur = hmap.get(Motor.Encoder.class, HoodConstants.HOOD_ENCODEUR_NAME);
 
-        hoodServo.setDirection(DcMotorSimple.Direction.FORWARD); //not sure
-        hoodServo.setPower(0.0);
+        hoodServo.setPosition(HoodConstants.HOOD_DEFAULT_POS);
     }
 
     public void update()
     {
-        hoodPosTick = hoodEncodeur.getPosition();
-        hoodAngle = hoodPosTick/HoodConstants.HOOD_TICK_PER_RADIANT;
-        isOutOfRange = hoodAngle > HoodConstants.HOOD_ANGLE_MAX || hoodAngle < HoodConstants.HOOD_ANGLE_MIN;
-
-        if (isOutOfRange)
-            hoodServo.setPower(0.0);
-        voltage = VoltageCompensator.getVoltage();
+        
     }
 
-    public void setVoltage(double power)
+    public void setPosRad(double position)
     {
-        if (!isOutOfRange)
-            hoodServo.setPower(power * (HoodConstants.HOOD_NOMINAL_VOLTAGE/voltage));
+        position = UtilsRBL.clamp(position, HoodConstants.HOOD_ANGLE_MIN, HoodConstants.HOOD_ANGLE_MAX);
+        hoodServo.setPosition( UtilsRBL.clamp(-1/(HoodConstants.HOOD_ANGLE_MIN - HoodConstants.HOOD_ANGLE_MAX) * (position - HoodConstants.HOOD_ANGLE_MIN), 0.0, 1.0 )); 
+        
+        /* 
+        Servo Position = 
+        s1 − s2
+        -------- (α − a1) + s1
+        a1 − a2
+        where:
+        α = desired angle
+        a1 = min angle = 0.5235987755982988 rad
+        a2 = max angle = 0.75049157835756 rad
+        s1 = min servo position = 0
+        s2 = max servo position = 1
+         
+        */
+    }
+
+    public void setPosDegrees(double position)
+    {
+        setPosRad(Math.toRadians(position));
+    }
+
+    public void setPos(double pos){
+        hoodServo.setPosition(pos);
     }
 }

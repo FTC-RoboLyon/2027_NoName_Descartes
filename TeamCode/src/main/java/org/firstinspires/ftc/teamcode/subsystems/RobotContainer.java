@@ -106,6 +106,10 @@ public class RobotContainer{
         //turret = new TurretSubsystem(hmap, telemetry, shooterParametersCalculator);
 
         voltageCompensator = new VoltageCompensator(hmap);
+
+        CommandScheduler.getInstance().registerSubsystem(shooterSubsystem, frontIntake, backIntake);
+        this.robotMode = robotMode;
+        this.telemetry = telemetry;
     }
 
     // --- Command Based Structure ---
@@ -117,8 +121,8 @@ public class RobotContainer{
 
             intake.SetControlMode(ControlMode.MANUAL_VOLTAGE);
 
-            shooterSubsystem.setFlywheelControlMode(ControlMode.VELOCITY_DUTYCYCLE_PID_FF);
-            shooterSubsystem.setHoodControlMode(ControlMode.POSITION_DUTYCYCLE_PID);
+            shooterSubsystem.setFlywheelControlMode(ControlMode.MANUAL_VELOCITY);
+            shooterSubsystem.setHoodControlMode(ControlMode.DISABLED);
             shooterSubsystem.setWantedState(ShooterSubsystem.WantedState.STAND_BY);
             //turret.setWantedState(TurretSubsystem.WantedState.STAND_BY);
 
@@ -166,11 +170,6 @@ public class RobotContainer{
         return drivetrain.getCurrentPose();
     }
 
-    public Telemetry getTelemetry()
-    {
-        return telemetry;
-    }
-
     // --- Private methods ---
     private void BindCommands()
     {
@@ -186,7 +185,8 @@ public class RobotContainer{
         shooterSubsystem.setSuppliersManualSpeedSuppliers(
                 ()-> VictorGamepad.getButton(GamepadKeys.Button.CROSS),
                 ()-> VictorGamepad.getButton(GamepadKeys.Button.CIRCLE),
-                ()-> VictorGamepad.getButton(GamepadKeys.Button.TRIANGLE));
+                ()-> VictorGamepad.getButton(GamepadKeys.Button.TRIANGLE),
+                ()-> VictorGamepad.getButton(GamepadKeys.Button.SQUARE));
 
         Button PI2_CCW = new GamepadButton(AlexisGamepad,Constants.PI2_CCW_BUTTON)
                 .whenPressed(new ChangeHeadingTargetCmd(drivetrain, Math.PI/2.0, true));
@@ -228,7 +228,6 @@ public class RobotContainer{
     //public static TurretSubsystem turret;
     public static VoltageCompensator voltageCompensator;
     public static CameraSubsystem camera;
-    public static ShooterParametersCalculator.ShootParameters shootParams;
 
     // --- IO getters ---
     private DriveIO getDrivetrainIO(HardwareMap hmap)

@@ -11,7 +11,7 @@ import org.firstinspires.ftc.LyonLib.logging.RealtimeLogger;
 
 import org.firstinspires.ftc.teamcode.subsystems.RobotContainer;
 import org.firstinspires.ftc.teamcode.subsystems.Constants;
-import org.firstinspires.ftc.teamcode.subsystems.shooterParametersCalculator.ShooterParametersCalculator.ShootParameters;
+import org.firstinspires.ftc.teamcode.subsystems.ShooterParametersCalculator.ShooterParametersCalculator.ShootParameters;
 
 public class CameraSubsystem extends SubsystemBase {
 
@@ -101,14 +101,14 @@ public class CameraSubsystem extends SubsystemBase {
 
                         if(HiveAngle >= 0.0)
                         {
-                            shootParams.targetPos = new Pose3d(Constants.RED_FRAME_CENTRE_POS.xMeters,
+                            shootParams.targetPosField = new Pose3d(Constants.RED_FRAME_CENTRE_POS.xMeters,
                                                                Constants.RED_FRAME_CENTRE_POS.yMeters + cos*-Constants.HIVE_ARM_LENGTH/2.0 + sin*(Constants.CELL_HEIGHT-Constants.PIVOT_HEIGHT_IN_HIVE),
                                                                Constants.FRAME_HEIGHT - sin*-Constants.HIVE_ARM_LENGTH/2.0 + cos*(Constants.CELL_HEIGHT-Constants.PIVOT_HEIGHT_IN_HIVE),
                                                                0.0,0.0,0.0);
                         }
                         else
                         {
-                            shootParams.targetPos = new Pose3d(Constants.RED_FRAME_CENTRE_POS.xMeters,
+                            shootParams.targetPosField = new Pose3d(Constants.RED_FRAME_CENTRE_POS.xMeters,
                                                                Constants.RED_FRAME_CENTRE_POS.yMeters + cos*Constants.HIVE_ARM_LENGTH/2.0 + sin*(Constants.CELL_HEIGHT-Constants.PIVOT_HEIGHT_IN_HIVE),
                                                                Constants.FRAME_HEIGHT - sin*Constants.HIVE_ARM_LENGTH/2.0 + cos*(Constants.CELL_HEIGHT-Constants.PIVOT_HEIGHT_IN_HIVE),
                                                                0.0,0.0,0.0);
@@ -139,14 +139,14 @@ public class CameraSubsystem extends SubsystemBase {
 
                         if(HiveAngle >= 0.0)
                         {
-                            shootParams.targetPos = new Pose3d(Constants.BLUE_FRAME_CENTRE_POS.xMeters,
+                            shootParams.targetPosField = new Pose3d(Constants.BLUE_FRAME_CENTRE_POS.xMeters,
                                                                Constants.BLUE_FRAME_CENTRE_POS.yMeters + cos*-Constants.HIVE_ARM_LENGTH/2.0 + sin*(Constants.CELL_HEIGHT-Constants.PIVOT_HEIGHT_IN_HIVE),
                                                                Constants.FRAME_HEIGHT - sin*-Constants.HIVE_ARM_LENGTH/2.0 + cos*(Constants.CELL_HEIGHT-Constants.PIVOT_HEIGHT_IN_HIVE),
                                                                0.0,0.0,0.0);
                         }
                         else
                         {
-                            shootParams.targetPos = new Pose3d(Constants.BLUE_FRAME_CENTRE_POS.xMeters,
+                            shootParams.targetPosField = new Pose3d(Constants.BLUE_FRAME_CENTRE_POS.xMeters,
                                                                Constants.BLUE_FRAME_CENTRE_POS.yMeters + cos*Constants.HIVE_ARM_LENGTH/2.0 + sin*(Constants.CELL_HEIGHT-Constants.PIVOT_HEIGHT_IN_HIVE),
                                                                Constants.FRAME_HEIGHT - sin*Constants.HIVE_ARM_LENGTH/2.0 + cos*(Constants.CELL_HEIGHT-Constants.PIVOT_HEIGHT_IN_HIVE),
                                                                0.0,0.0,0.0);
@@ -161,7 +161,7 @@ public class CameraSubsystem extends SubsystemBase {
         }
         else
         {
-            robot.getTelemetry().addLine("Limelight has closed its eye");
+            // robot.getTelemetry().addLine("Limelight has closed its eye");
         }
     }
 }
