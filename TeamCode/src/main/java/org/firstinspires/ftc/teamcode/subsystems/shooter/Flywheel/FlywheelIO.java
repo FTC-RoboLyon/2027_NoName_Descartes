@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.firstinspires.ftc.LyonLib.utils.UtilsRBL;
 import org.firstinspires.ftc.LyonLib.utils.VoltageCompensator;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
@@ -46,12 +47,12 @@ public class FlywheelIO {
         calculateFlywheelVelocity();
         telemetry.addData("consigne", flywheelMotor.getPower());
         voltage = VoltageCompensator.getVoltage();
-        telemetry.addData("voltage", voltage);
+        //telemetry.addData("voltage", voltage);
     }
 
     public void applyPower(double power)
     {
-        flywheelMotor.setPower(power * (FlywheelConstants.FLYWHEEL_NOMINAL_VOLTAGE/voltage));
+        flywheelMotor.setPower(UtilsRBL.clamp(power * (FlywheelConstants.FLYWHEEL_NOMINAL_VOLTAGE/voltage), -1.0, 1.0));
     }
 
     public void reset(){

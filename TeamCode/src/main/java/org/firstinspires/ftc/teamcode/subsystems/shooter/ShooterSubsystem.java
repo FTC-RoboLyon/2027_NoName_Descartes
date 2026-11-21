@@ -6,7 +6,8 @@ import org.firstinspires.ftc.LyonLib.control.ControlMode;
 import org.firstinspires.ftc.LyonLib.control.FeedForwardModel;
 import org.firstinspires.ftc.LyonLib.control.PidRBL;
 import org.firstinspires.ftc.LyonLib.utils.UtilsRBL;
-import org.firstinspires.ftc.teamcode.subsystems.shooterParametersCalculator.ShooterParametersCalculator;
+import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.subsystems.ShooterParametersCalculator.ShooterParametersCalculator;
 import org.firstinspires.ftc.teamcode.subsystems.shooter.Flywheel.FlywheelConstants;
 import org.firstinspires.ftc.teamcode.subsystems.shooter.Flywheel.FlywheelIO;
 import org.firstinspires.ftc.teamcode.subsystems.shooter.Hood.HoodIO;
@@ -21,12 +22,14 @@ public class ShooterSubsystem extends SubsystemBase {
     private FlywheelIO flywheelIO;
     private ShooterParametersCalculator shooterParametersCalculator;
 
+    private Telemetry telemetry;
+
     private PidRBL flywheelPID = new PidRBL(FlywheelConstants.FLYWHEEL_MOTOR_KP, FlywheelConstants.FLYWHEEL_MOTOR_KI, FlywheelConstants.FLYWHEEL_MOTOR_KD);
     private FeedForwardModel flywheelFeedForward = new FeedForwardModel(FlywheelConstants.FLYWHEEL_MOTOR_KS, FlywheelConstants.FLYWHEEL_MOTOR_KV, 0.0);
 
     private PidRBL hoodPID = new PidRBL(HoodConstants.HOOD_KP, HoodConstants.HOOD_KI, HoodConstants.HOOD_KD);
 
-    private BooleanSupplier shootNearTrigger, shootFacedWithCellTrigger, shootFromFlowerTrigger = ()-> false;
+    private BooleanSupplier shootNearTrigger, shootFacedWithCellTrigger, shootFromFlowerTrigger, stopSupplier = ()-> false;
     private DoubleSupplier flywheelManualVoltage = ()-> 0.0;
 
     private double flywheelTargetSpeed = 0.0;
@@ -69,6 +72,7 @@ public class ShooterSubsystem extends SubsystemBase {
     private SystemState systemState = ShooterSubsystem.SystemState.IDLE;
 
     public SystemState getSystemState() {return systemState;}
+    public WantedState getWantedState() {return wantedState;}
     public void setWantedState(WantedState wantedState){this.wantedState = wantedState;}
 
 
@@ -95,11 +99,18 @@ public class ShooterSubsystem extends SubsystemBase {
 
     }
 
-    public void setSuppliersManualSpeedSuppliers(BooleanSupplier shootNearTrigger, BooleanSupplier shootFacedWithCellTrigger, BooleanSupplier shootFromFlowerTrigger)
+    public ShooterSubsystem(HoodIO hoodIO, FlywheelIO flywheelIO, ShooterParametersCalculator shooterParametersCalculator, Telemetry telemetry)
+    {
+        this(hoodIO, flywheelIO, shooterParametersCalculator);
+        this.telemetry = telemetry;
+    }
+
+    public void setSuppliersManualSpeedSuppliers(BooleanSupplier shootNearTrigger, BooleanSupplier shootFacedWithCellTrigger, BooleanSupplier shootFromFlowerTrigger , BooleanSupplier stopSupplier)
     {
         this.shootNearTrigger = shootNearTrigger;
         this.shootFacedWithCellTrigger = shootFacedWithCellTrigger;
         this.shootFromFlowerTrigger = shootFromFlowerTrigger;
+        this.stopSupplier = stopSupplier;
     }
 
     public void setFlywheelManualVoltageSupplier(DoubleSupplier flywheelManualVoltage)
@@ -115,27 +126,39 @@ public class ShooterSubsystem extends SubsystemBase {
         hoodIO.update();
 
         if (hoodControlMode.allowsStateMachine() || flywheelControlMode.allowsStateMachine())
-            RunStateMachine();
+            {
+                RunStateMachine();
+            }
+            
+
+        telemetry.addData("allowStateMachine", hoodControlMode.allowsStateMachine() || flywheelControlMode.allowsStateMachine());
 
         switch (hoodControlMode)
         {
             case MANUAL_POSITION:
 
                 if (shootNearTrigger.getAsBoolean())
-                    hoodTargetAngle = HoodConstants.HOOD_ANGLE_NEAR;
-                else if (shootFacedWithCellTrigger.getAsBoolean())
-                    hoodTargetAngle = HoodConstants.HOOD_ANGLE_FACED_WITH_CELL;
-                else if (shootFromFlowerTrigger.getAsBoolean())
-                    hoodTargetAngle = HoodConstants.HOOD_ANGLE_FROM_FLOWER;
+                    {
+                        hoodTargetAngle = HoodConstants.HOOD_ANGLE_NEAR;
+                    }
+                    
+                if (shootFacedWithCellTrigger.getAsBoolean())
+                    {
+                        hoodTargetAngle = HoodConstants.HOOD_ANGLE_FACED_WITH_CELL;
+                    }
+                    
+                if (shootFromFlowerTrigger.getAsBoolean())
+                    {
+                        hoodTargetAngle = HoodConstants.HOOD_ANGLE_FROM_FLOWER;
+                    }
+                    
 
-                hoodIO.setVoltage(
-                        hoodPID.calculateWithRealTime(hoodTargetAngle, hoodIO.getHoodAngle(), System.nanoTime())
-                );
+                hoodIO.setPos(hoodTargetAngle);
                 break;
 
             case MANUAL_DUTY_CYCLE:
                 break;
-            case POSITION_DUTYCYCLE_PID:
+            case POSITION_VOLTAGE_PID:
                 switch (systemState)
                 {
                     case IDLE:
@@ -143,21 +166,24 @@ public class ShooterSubsystem extends SubsystemBase {
 
                     case BRAKING_DOWN:
                     case STOPPED:
-                    case PREPARING_SHOOT_PUBLIC_CELL:
-                    case READY_TO_SHOOT_PUBLIC_CELL:
-                    case PREPARING_SHOOT_OPPOSITE_CELL:
-                    case READY_TO_SHOOT_OPPOSITE_CELL:
-                    case PREPARING_SHOOT_PUBLIC_SIDE:
-                    case READY_TO_SHOOT_PUBLIC_SIDE:
                     case PREPARING_SHOOT_OPPOSITE_SIDE:
+                    case PREPARING_SHOOT_PUBLIC_SIDE:
+                    case PREPARING_SHOOT_OPPOSITE_CELL:
+                    case PREPARING_SHOOT_PUBLIC_CELL:
+
+                        hoodIO.setPosRad(hoodTargetAngle);
+                        break;
+
+                    case READY_TO_SHOOT_PUBLIC_CELL:
+                    case READY_TO_SHOOT_OPPOSITE_CELL:
+                    case READY_TO_SHOOT_PUBLIC_SIDE:
                     case READY_TO_SHOOT_OPPOSITE_SIDE:
-                        hoodIO.setVoltage(
-                                hoodPID.calculate(hoodTargetAngle, hoodIO.getHoodAngle())
-                        );
+
+                        hoodIO.setPosRad(hoodTargetAngle);//+ (flywheelTargetSpeed - flywheelIO.getFlywheelVelocity()) * HoodConstants.HOOD_VELOCITY_COMPENSATION);   //for later
                         break;
 
                     default:
-                        throw new IllegalStateException("System state isn(t valid");
+                        throw new IllegalStateException("System state isn't valid");
                 }
                 break;
             case DISABLED:
@@ -170,11 +196,26 @@ public class ShooterSubsystem extends SubsystemBase {
         {
             case MANUAL_VELOCITY:
                 if (shootNearTrigger.getAsBoolean())
-                    flywheelTargetSpeed = FlywheelConstants.FLYWHEEL_SPEED_NEAR;
-                else if (shootFacedWithCellTrigger.getAsBoolean())
-                    flywheelTargetSpeed = FlywheelConstants.FLYWHEEL_SPEED_FACED_WITH_CELL;
-                else if (shootFromFlowerTrigger.getAsBoolean())
-                    flywheelTargetSpeed = FlywheelConstants.FLYWHEEL_SPEED_FROM_FLOWER;
+                    {
+                        flywheelTargetSpeed = FlywheelConstants.FLYWHEEL_SPEED_NEAR;
+                    }
+                    
+
+                if (shootFacedWithCellTrigger.getAsBoolean())
+                    {
+                        flywheelTargetSpeed = FlywheelConstants.FLYWHEEL_SPEED_FACED_WITH_CELL;
+                    }
+                    
+
+                if (shootFromFlowerTrigger.getAsBoolean())
+                    {
+                        flywheelTargetSpeed = FlywheelConstants.FLYWHEEL_SPEED_FROM_FLOWER;
+                    }
+
+                if (stopSupplier.getAsBoolean())
+                    {
+                        flywheelTargetSpeed = 0.0;
+                    }
 
                 flywheelIO.applyPower(
                         flywheelFeedForward.calculate(flywheelTargetSpeed)
@@ -216,8 +257,13 @@ public class ShooterSubsystem extends SubsystemBase {
             case DISABLED:
                 break;
             default:
-                throw new IllegalStateException("Unsupported Control Mode used for hood");
+                throw new IllegalStateException("Unsupported Control Mode used for Flywheel");
         }
+        telemetry.addData("target speed", flywheelTargetSpeed);
+        telemetry.addData("real speed", flywheelIO.getFlywheelVelocity());
+        telemetry.addData("NearSupplier", shootNearTrigger.getAsBoolean());
+        telemetry.addData("FlowerSupplier", shootFromFlowerTrigger.getAsBoolean());
+        telemetry.addData("FacedSupplier", shootFacedWithCellTrigger.getAsBoolean());
     }
 
     private void RunStateMachine()
@@ -227,13 +273,19 @@ public class ShooterSubsystem extends SubsystemBase {
             case STAND_BY:
 
                 if (systemState != SystemState.IDLE)
-                    systemState = SystemState.IDLE;
+                    {
+                        systemState = SystemState.IDLE;
+                    }
+                    
                 break;
 
             case STOP:
 
                 if (systemState != SystemState.STOPPED)
-                    systemState = SystemState.BRAKING_DOWN;
+                    {
+                        systemState = SystemState.BRAKING_DOWN;
+                    }
+                    
 
                 flywheelTargetSpeed = 0.0;
                 hoodTargetAngle = HoodConstants.HOOD_DEFAULT_POS;
@@ -242,7 +294,10 @@ public class ShooterSubsystem extends SubsystemBase {
             case SHOOT_PUBLIC_CELL:
 
                 if (systemState != SystemState.READY_TO_SHOOT_PUBLIC_CELL)
-                    systemState = SystemState.PREPARING_SHOOT_PUBLIC_CELL;
+                    {
+                        systemState = SystemState.PREPARING_SHOOT_PUBLIC_CELL;
+                    }
+                    
 
                 flywheelTargetSpeed = shooterParametersCalculator.getShootParam().flywheelSpeed;
                 hoodTargetAngle = shooterParametersCalculator.getShootParam().hoodAngle;
@@ -251,7 +306,10 @@ public class ShooterSubsystem extends SubsystemBase {
             case SHOOT_OPPOSITE_CELL:
 
                 if (systemState != SystemState.READY_TO_SHOOT_OPPOSITE_CELL)
-                    systemState = SystemState.PREPARING_SHOOT_OPPOSITE_CELL;
+                    {
+                        systemState = SystemState.PREPARING_SHOOT_OPPOSITE_CELL;
+                    }
+                    
 
                 flywheelTargetSpeed = shooterParametersCalculator.getShootParam().flywheelSpeed;
                 hoodTargetAngle = shooterParametersCalculator.getShootParam().hoodAngle;
@@ -260,7 +318,10 @@ public class ShooterSubsystem extends SubsystemBase {
             case SHOOT_PUBLIC_SIDE:
 
                 if (systemState != SystemState.READY_TO_SHOOT_PUBLIC_SIDE)
-                    systemState = SystemState.PREPARING_SHOOT_PUBLIC_SIDE;
+                    {
+                        systemState = SystemState.PREPARING_SHOOT_PUBLIC_SIDE;
+                    }
+                    
 
                 flywheelTargetSpeed = shooterParametersCalculator.getShootParam().flywheelSpeed;
                 hoodTargetAngle = shooterParametersCalculator.getShootParam().hoodAngle;
@@ -269,7 +330,10 @@ public class ShooterSubsystem extends SubsystemBase {
             case SHOOT_OPPOSITE_SIDE:
 
                 if (systemState != SystemState.READY_TO_SHOOT_OPPOSITE_SIDE)
-                    systemState = SystemState.PREPARING_SHOOT_OPPOSITE_SIDE;
+                    {
+                        systemState = SystemState.PREPARING_SHOOT_OPPOSITE_SIDE;
+                    }
+                    
 
                 flywheelTargetSpeed = shooterParametersCalculator.getShootParam().flywheelSpeed;
                 hoodTargetAngle = shooterParametersCalculator.getShootParam().hoodAngle;
@@ -290,27 +354,42 @@ public class ShooterSubsystem extends SubsystemBase {
 
             case BRAKING_DOWN:
                 if (UtilsRBL.isInRange(flywheelIO.getFlywheelVelocity(), 0.0, FlywheelConstants.FLYWHEEL_TOLERANCE))
-                    systemState = SystemState.STOPPED;
+                    {
+                        systemState = SystemState.STOPPED;
+                    }
+                    
                 break;
 
             case PREPARING_SHOOT_PUBLIC_CELL:
                 if (isAtTargetSpeed && isAtTargetAngle)
-                    systemState = SystemState.READY_TO_SHOOT_PUBLIC_CELL;
+                    {
+                        systemState = SystemState.READY_TO_SHOOT_PUBLIC_CELL;
+                    }
+                    
                 break;
 
             case PREPARING_SHOOT_OPPOSITE_CELL:
                 if (isAtTargetSpeed && isAtTargetAngle)
-                    systemState = SystemState.READY_TO_SHOOT_OPPOSITE_CELL;
+                    {
+                        systemState = SystemState.READY_TO_SHOOT_OPPOSITE_CELL;
+                    }
+                    
                 break;
 
             case PREPARING_SHOOT_PUBLIC_SIDE:
                 if (isAtTargetSpeed && isAtTargetAngle)
-                    systemState = SystemState.READY_TO_SHOOT_PUBLIC_SIDE;
+                    {
+                        systemState = SystemState.READY_TO_SHOOT_PUBLIC_SIDE;
+                    }
+                    
                 break;
 
             case PREPARING_SHOOT_OPPOSITE_SIDE:
                 if (isAtTargetSpeed && isAtTargetAngle)
-                    systemState = SystemState.READY_TO_SHOOT_OPPOSITE_SIDE;
+                    {
+                        systemState = SystemState.READY_TO_SHOOT_OPPOSITE_SIDE;
+                    }
+                    
                 break;
 
             case READY_TO_SHOOT_PUBLIC_CELL:
@@ -318,7 +397,7 @@ public class ShooterSubsystem extends SubsystemBase {
             case READY_TO_SHOOT_PUBLIC_SIDE:
             case READY_TO_SHOOT_OPPOSITE_SIDE:
             default:
-                throw new IllegalStateException("System state isn(t valid");
+                throw new IllegalStateException("System state isn't valid");
         }
     }
 

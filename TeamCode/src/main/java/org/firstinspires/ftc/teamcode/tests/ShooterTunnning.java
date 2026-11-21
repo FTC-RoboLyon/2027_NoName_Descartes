@@ -11,6 +11,7 @@ import org.firstinspires.ftc.LyonLib.control.PidRBL;
 import org.firstinspires.ftc.LyonLib.utils.UtilsRBL;
 import org.firstinspires.ftc.LyonLib.utils.VoltageCompensator;
 import org.firstinspires.ftc.teamcode.subsystems.shooter.Flywheel.FlywheelIO;
+import org.firstinspires.ftc.teamcode.subsystems.shooter.Hood.HoodIO;
 
 @Config
 @TeleOp
@@ -35,18 +36,13 @@ public class ShooterTunnning extends OpMode {
 
 
 
-    //HoodIO hood;
+    HoodIO hood;
 
-    private PidRBL hoodPID = new PidRBL(FLYWHEEL_MOTOR_KP, FLYWHEEL_MOTOR_KI, FLYWHEEL_MOTOR_KD);
-
-    public double hoodTargetAngle = 1000; //in rad
+    public static double hoodTargetAngle = 0.1; 
 
     private boolean isAtTargetAngle = false;
-    public  double HOOD_KP = 0.0; //from Radiants to duty cycle
-    public  double HOOD_KI = 0.0; //from Radiants to duty cycle
-    public  double HOOD_KD = 0.0; //from Radiants to duty cycle
 
-    public  double HOOD_TOLERANCE = 0.0; //in Radiants
+    public static double HOOD_TOLERANCE = 0.0; //in Radiants
 
     private MultipleTelemetry m_Telemetry;
     private VoltageCompensator voltageCompensator;
@@ -64,9 +60,7 @@ public class ShooterTunnning extends OpMode {
         flywheelFeedForward.setOutputLimits(-1.0, 1.0);
 
         //hood = new HoodIO(hardwareMap);
-        hoodPID.setGains(HOOD_KP, HOOD_KI, HOOD_KD);
-        hoodPID.setOutputLimits(-1.0, 1.0);
-
+        
         voltageCompensator = new VoltageCompensator(hardwareMap);
     }
 
@@ -90,7 +84,7 @@ public class ShooterTunnning extends OpMode {
 
         m_Telemetry.addData( "feedForwardOutput", flywheelFeedForward.calculate(flywheelTargetSpeed));
         m_Telemetry.addData( "fPIDOutput", pidOutput);
-        //hood.setVoltage(hoodPID.calculate(hoodTargetAngle, hood.getHoodAngle()) * (HoodConstants.HOOD_NOMINAL_VOLTAGE/voltage));
+        //hood.setPos(hoodTargetAngle);
 
         isAtTargetSpeed = UtilsRBL.isInRange(flywheelSpeed, flywheelTargetSpeed, FLYWHEEL_TOLERANCE);
         //isAtTargetAngle = UtilsRBL.isInRange(hood.getHoodAngle(), hoodTargetAngle, HOOD_TOLERANCE);

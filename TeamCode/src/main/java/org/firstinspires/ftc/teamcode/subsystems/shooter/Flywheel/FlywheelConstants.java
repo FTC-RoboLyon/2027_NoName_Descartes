@@ -10,7 +10,7 @@ public class FlywheelConstants {
 
     public static final ControlMode MainConntrolMode = ControlMode.VELOCITY_DUTYCYCLE_PID_FF;
     public static final ControlMode EmergencyConntrolMode = ControlMode.MANUAL_VELOCITY;
-    public static final String FLYWHEEL_MOTOR_NAME = "shooterMotor";
+    public static final String FLYWHEEL_MOTOR_NAME = "flywheel";
     public static double FLYWHEEL_NOMINAL_VOLTAGE = 12.4;
 
     public static final double ENCODEUR_MOTOR_RATIO = 1.0;

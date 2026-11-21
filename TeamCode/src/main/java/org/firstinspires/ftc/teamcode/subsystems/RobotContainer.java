@@ -25,9 +25,9 @@ import org.firstinspires.ftc.LyonLib.drive.MecanumDriveIO;
 import org.firstinspires.ftc.teamcode.commands.ChangeHeadingTargetCmd;
 import org.firstinspires.ftc.teamcode.commands.OverrideDrivetrainInputsCmd;
 import org.firstinspires.ftc.teamcode.subsystems.ShooterParametersCalculator.ShooterParametersCalculator;
-import org.firstinspires.ftc.teamcode.subsystems.ShooterPollen.Flywheel.FlywheelIO;
-import org.firstinspires.ftc.teamcode.subsystems.ShooterPollen.Hood.HoodIO;
-import org.firstinspires.ftc.teamcode.subsystems.ShooterPollen.PollenShooterSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.shooter.Flywheel.FlywheelIO;
+import org.firstinspires.ftc.teamcode.subsystems.shooter.Hood.HoodIO;
+import org.firstinspires.ftc.teamcode.subsystems.shooter.ShooterSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.camera.CameraSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.drivetrain.DcMotorWheelIO;
 import org.firstinspires.ftc.teamcode.subsystems.drivetrain.DrivetrainSubsystem;
@@ -100,14 +100,18 @@ public class RobotContainer{
         drivetrain = new DrivetrainSubsystem(getDrivetrainIO(hmap), getLocalizer(hmap), new Pose2d(),logger ,telemetry);
         frontIntake = new IntakeSubsystem(new IntakeIO(hmap, true));
         backIntake = new IntakeSubsystem(new IntakeIO(hmap, false));
-        camera = new CameraSubsystem(hmap.get(Limelight3A.class, "cam_ille"), this, logger, shootParams);
+        // camera = new CameraSubsystem(new Limelight3A(hmap, "cam_ille"), this, logger, shooterParameter);
 
         shooterParametersCalculator = new ShooterParametersCalculator( ()-> drivetrain.getCurrentPose(), telemetry);
-        shooterSubsystem = new PollenShooterSubsystem(new HoodIO(hmap), new FlywheelIO(hmap), shooterParametersCalculator);
+        shooterSubsystem = new ShooterSubsystem(new HoodIO(hmap), new FlywheelIO(hmap), shooterParametersCalculator);
 
         //turret = new TurretSubsystem(hmap, telemetry, shooterParametersCalculator);
 
         voltageCompensator = new VoltageCompensator(hmap);
+
+        CommandScheduler.getInstance().registerSubsystem(shooterSubsystem, frontIntake, backIntake);
+        this.robotMode = robotMode;
+        this.telemetry = telemetry;
     }
 
     // --- Command Based Structure ---
@@ -122,7 +126,7 @@ public class RobotContainer{
 
             shooterSubsystem.setFlywheelControlMode(ControlMode.MANUAL_VELOCITY);
             shooterSubsystem.setHoodControlMode(ControlMode.DISABLED);
-            shooterSubsystem.setWantedState(PollenShooterSubsystem.WantedState.STAND_BY);
+            shooterSubsystem.setWantedState(ShooterSubsystem.WantedState.STAND_BY);
             //turret.setWantedState(TurretSubsystem.WantedState.STAND_BY);
 
 
@@ -170,11 +174,6 @@ public class RobotContainer{
         return drivetrain.getCurrentPose();
     }
 
-    public Telemetry getTelemetry()
-    {
-        return telemetry;
-    }
-
     // --- Private methods ---
     private void BindCommands()
     {
@@ -191,7 +190,8 @@ public class RobotContainer{
         shooterSubsystem.setSuppliersManualSpeedSuppliers(
                 ()-> VictorGamepad.getButton(GamepadKeys.Button.CROSS),
                 ()-> VictorGamepad.getButton(GamepadKeys.Button.CIRCLE),
-                ()-> VictorGamepad.getButton(GamepadKeys.Button.TRIANGLE));
+                ()-> VictorGamepad.getButton(GamepadKeys.Button.TRIANGLE),
+                ()-> VictorGamepad.getButton(GamepadKeys.Button.SQUARE));
 
         Button PI2_CCW = new GamepadButton(AlexisGamepad,Constants.PI2_CCW_BUTTON)
                 .whenPressed(new ChangeHeadingTargetCmd(drivetrain, Math.PI/2.0, true));
@@ -229,12 +229,11 @@ public class RobotContainer{
     public static DrivetrainSubsystem drivetrain;
     public static IntakeSubsystem frontIntake, backIntake;
     public static ShooterParametersCalculator shooterParametersCalculator;
-    public static PollenShooterSubsystem shooterSubsystem;
+    public static ShooterSubsystem shooterSubsystem;
 
     //public static TurretSubsystem turret;
     public static VoltageCompensator voltageCompensator;
     public static CameraSubsystem camera;
-    public static ShooterParametersCalculator.ShootParameters shootParams;
 
     // --- IO getters ---
     private DriveIO getDrivetrainIO(HardwareMap hmap)
