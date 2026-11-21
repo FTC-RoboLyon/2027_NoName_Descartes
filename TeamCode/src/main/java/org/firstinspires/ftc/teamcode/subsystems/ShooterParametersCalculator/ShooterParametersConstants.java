@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.subsystems.ShooterParametersCalculator;
+package org.firstinspires.ftc.teamcode.subsystems.shooterParametersCalculator;
 
 public class ShooterParametersConstants {
 

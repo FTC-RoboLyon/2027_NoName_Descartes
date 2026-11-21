@@ -11,7 +11,7 @@ import org.firstinspires.ftc.LyonLib.logging.RealtimeLogger;
 
 import org.firstinspires.ftc.teamcode.subsystems.RobotContainer;
 import org.firstinspires.ftc.teamcode.subsystems.Constants;
-import org.firstinspires.ftc.teamcode.subsystems.ShooterParametersCalculator.ShooterParametersCalculator.ShootParameters;
+import org.firstinspires.ftc.teamcode.subsystems.shooterParametersCalculator.ShooterParametersCalculator.ShootParameters;
 
 public class CameraSubsystem extends SubsystemBase {
 

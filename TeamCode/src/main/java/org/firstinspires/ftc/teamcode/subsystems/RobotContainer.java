@@ -98,7 +98,7 @@ public class RobotContainer{
     {
         drivetrain = new DrivetrainSubsystem(getDrivetrainIO(hmap), getLocalizer(hmap), new Pose2d(),logger ,telemetry);
         intake = new IntakeSubsystem(new IntakeIO(hmap));
-        camera = new CameraSubsystem(hmap.get(Limelight3A.class, "cam_ille"), this, logger, shootParams);
+        camera = new CameraSubsystem(hmap.get(Limelight3A.class, "cam_ille"), this, logger, shooterParametersCalculator.getShootParam());
 
         shooterParametersCalculator = new ShooterParametersCalculator( ()-> drivetrain.getCurrentPose(), telemetry);
         shooterSubsystem = new ShooterSubsystem(new HoodIO(hmap), new FlywheelIO(hmap), shooterParametersCalculator);
@@ -107,7 +107,6 @@ public class RobotContainer{
 
         voltageCompensator = new VoltageCompensator(hmap);
 
-        CommandScheduler.getInstance().registerSubsystem(shooterSubsystem, frontIntake, backIntake);
         this.robotMode = robotMode;
         this.telemetry = telemetry;
     }

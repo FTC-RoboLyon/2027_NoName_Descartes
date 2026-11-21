@@ -13,7 +13,7 @@ import com.qualcomm.robotcore.hardware.VoltageSensor;
 import org.firstinspires.ftc.LyonLib.control.ControlMode;
 import org.firstinspires.ftc.LyonLib.control.FeedForwardModel;
 import org.firstinspires.ftc.LyonLib.control.PidRBL;
-import org.firstinspires.ftc.teamcode.subsystems.ShooterParametersCalculator.ShooterParametersCalculator;
+import org.firstinspires.ftc.teamcode.subsystems.shooterParametersCalculator.ShooterParametersCalculator;
 import org.firstinspires.ftc.teamcode.subsystems.shooter.ShooterSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.shooter.Flywheel.FlywheelIO;
 import org.firstinspires.ftc.teamcode.subsystems.shooter.Hood.HoodIO;
