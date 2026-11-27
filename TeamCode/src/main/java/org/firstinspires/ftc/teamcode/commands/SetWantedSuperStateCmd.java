@@ -10,7 +10,7 @@ public class SetWantedSuperStateCmd extends CommandBase{
     private Superstructure.WantedSuperState wantedSuperState;
     private Superstructure.WantedSuperState adaptedWantedSuperState;
 
-    public SetWantedSuperStateCommand(Superstructure superstructure, Superstructure.WantedSuperState wantedSuperState)
+    public SetWantedSuperStateCmd(Superstructure superstructure, Superstructure.WantedSuperState wantedSuperState)
     {
         this.superstructure = superstructure;
         this.wantedSuperState = wantedSuperState;
