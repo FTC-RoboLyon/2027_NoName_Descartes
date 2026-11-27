@@ -23,16 +23,26 @@ public class Superstructure extends SubsystemBase{
     {
         STAND_BY,
         //Basic states
-        INTAKE,
+        FRONT_INTAKE,
+        BACK_INTAKE,
+        DOUBLE_INTAKE,
         SHOOT,
         FEED_ALLIANCE_ZONE,
         //Prepare states
         PREPARE_SHOOT,
         PREPARE_FEED,
         //Combined states
-        SHOOT_INTAKING,
-        FEED_INTAKING,
-        PREPARE_SHOOT_INTAKING,
+        SHOOT_FRONT_INTAKING,
+        SHOOT_BACK_INTAKING,
+        SHOOT_DOUBLE_INTAKING,
+
+        FEED_FRONT_INTAKING,
+        FEED_BACK_INTAKING,
+        FEED_DOUBLE_INTAKING,
+
+        PREPARE_SHOOT_FRONT_INTAKING,
+        PREPARE_SHOOT_BACK_INTAKING,
+        PREPARE_SHOOT_DOUBLE_INTAKING,
         //Optional test TODO
         // POLINIZE_FLOWERS,
         // SHOOT_WITH_INTAKE,
@@ -43,35 +53,50 @@ public class Superstructure extends SubsystemBase{
     {
         IDLE,
         //Steady States
-        INTAKING,
+        FRONT_INTAKING,
+        BACK_INTAKING,
+        DOUBLE_INTAKING,
+
         SHOOTING,
         FEEDING,
-        SHOOTING_WHILE_INTAKING,
-        FEEDING_WHILE_INTAKING,
+
+        SHOOTING_WHILE_FRONT_INTAKING,
+        SHOOTING_WHILE_BACK_INTAKING,
+        SHOOTING_WHILE_DOUBLE_INTAKING,
+
+        FEEDING_WHILE_FRONT_INTAKING,
+        FEEDING_WHILE_BACK_INTAKING,
+        FEEDING_WHILE_DOUBLE_INTAKING,
         //Transition States
         PREPARING_SHOOT,
         PREPARING_FEED,
-        PREPARING_SHOOT_WHILE_INTAKING,
-        PREPARING_FEED_WHILE_INTAKING
+
+        PREPARING_SHOOT_WHILE_FRONT_INTAKING,
+        PREPARING_SHOOT_WHILE_BACK_INTAKING,
+        PREPARING_SHOOT_WHILE_DOUBLE_INTAKING,
+
+        PREPARING_FEED_WHILE_FRONT_INTAKING,
+        PREPARING_FEED_WHILE_BACK_INTAKING,
+        PREPARING_FEED_WHILE_DOUBLE_INTAKING,
     }
 
-    private WantedSuperState wantedState = WantedSuperState.STAND_BY;
-    private SystemSuperState systemState = SystemSuperState.IDLE;
+    private WantedSuperState wantedSuperState = WantedSuperState.STAND_BY;
+    private SystemSuperState systemSuperState = SystemSuperState.IDLE;
 
     private IntakeSubsystem intake;
     private FeederSubsystem feeder;
     private TurretSubsystem turret;
     private ShooterSubsystem shooter;
 
-    public void SetWantedSuperState(WantedSuperState wantedState)
+    public void SetWantedSuperState(WantedSuperState wantedSuperState)
     {
-        this.wantedState = wantedState;
+        this.wantedSuperState = wantedSuperState;
         //TODO :Combined States
     }
 
     public SystemSuperState GetSystemSuperState()
     {
-        return systemState;
+        return systemSuperState;
     }
 
     // --- Subsystems Control Mode ---
@@ -100,7 +125,45 @@ public class Superstructure extends SubsystemBase{
     @Override 
     public void periodic()
     {
+        RunSuperStateMachine();
 
+        // switch(systemSuperState)
+        // {
+            // case IDLE:
+                // intake.SetWantedState(IntakeSubsystem.WantedState.STAND_BY);
+                // feeder.SetWantedState(FeederSubsystem.WantedState.STAND_BY);
+                // turret.SetWantedState(TurretSubsystem.WantedState.STAND_BY);
+                // shooter.SetWantedState(ShooterSubsystem.WantedState.STAND_BY);
+                // break;
+// 
+            // case FRONT_INTAKING:
+                // intake.SetWantedState(IntakeSubsystem.WantedState.FRONT_INTAKE);
+                // feeder.SetWantedState(FeederSubsystem.WantedState.STAND_BY);
+                // turret.SetWantedState(TurretSubsystem.WantedState.STAND_BY);
+                // shooter.SetWantedState(ShooterSubsystem.WantedState.STAND_BY);
+                // break;
+// 
+            // case BACK_INTAKING:
+                // intake.SetWantedState(IntakeSubsystem.WantedState.BACK_INTAKE);
+                // feeder.SetWantedState(FeederSubsystem.WantedState.STAND_BY);
+                // turret.SetWantedState(TurretSubsystem.WantedState.STAND_BY);
+                // shooter.SetWantedState(ShooterSubsystem.WantedState.STAND_BY);
+                // break;
+// 
+            // case DOUBLE_INTAKING:
+                // intake.SetWantedState(IntakeSubsystem.WantedState.DOUBLE_INTAKING);
+                // feeder.SetWantedState(FeederSubsystem.WantedState.STAND_BY);
+                // turret.SetWantedState(TurretSubsystem.WantedState.STAND_BY);
+                // shooter.SetWantedState(ShooterSubsystem.WantedState.STAND_BY);
+                // break;
+// 
+            // case SHOOTING:
+                // intake.SetWantedState(IntakeSubsystem.WantedState.STAND_BY);
+                // feeder.SetWantedState(FeederSubsystem.WantedState.FEED);
+                // turret.SetWantedState(TurretSubsystem.WantedState.TRACK_PUBLIC_CELL);
+                // shooter.SetWantedState(ShooterSubsystem.WantedState.SHOOT_PUBLIC_CELL);
+                // break;
+        // }
     }
 
 
@@ -108,102 +171,188 @@ public class Superstructure extends SubsystemBase{
 
     private void RunSuperStateMachine()
     {
-        switch(wantedState)
+        switch(wantedSuperState)
         {
             case STAND_BY:
                 break;
 
-            case INTAKE:
-                systemState = SystemSuperState.INTAKING;
+            case FRONT_INTAKE:
+                systemSuperState = SystemSuperState.FRONT_INTAKING;
+                break;
+
+            case BACK_INTAKE:
+                systemSuperState = SystemSuperState.BACK_INTAKING;
+                break;
+
+            case DOUBLE_INTAKE:
+                systemSuperState = SystemSuperState.DOUBLE_INTAKING;
                 break;
 
             case SHOOT:
-                if(systemState != SystemSuperState.SHOOTING)
+                if(systemSuperState != SystemSuperState.SHOOTING)
                 {
-                    systemState = SystemSuperState.PREPARING_SHOOT;
+                    systemSuperState = SystemSuperState.PREPARING_SHOOT;
                 }
                 break;
 
             case FEED_ALLIANCE_ZONE:
-                if(systemState != SystemSuperState.FEEDING)
+                if(systemSuperState != SystemSuperState.FEEDING)
                 {
-                    systemState = SystemSuperState.PREPARING_FEED;
+                    systemSuperState = SystemSuperState.PREPARING_FEED;
                 }
                 break;
 
             case PREPARE_SHOOT:
-                systemState = SystemSuperState.PREPARING_SHOOT;
+                systemSuperState = SystemSuperState.PREPARING_SHOOT;
                 break;
 
             case PREPARE_FEED:    
-                systemState = SystemSuperState.PREPARING_FEED;
+                systemSuperState = SystemSuperState.PREPARING_FEED;
                 break;
 
-            case SHOOT_INTAKING:
-                if(systemState != SystemSuperState.SHOOTING_WHILE_INTAKING)
+            case SHOOT_FRONT_INTAKING:
+                if(systemSuperState != SystemSuperState.SHOOTING_WHILE_FRONT_INTAKING)
                 {
-                    systemState = SystemSuperState.PREPARING_SHOOT_WHILE_INTAKING;
+                    systemSuperState = SystemSuperState.PREPARING_SHOOT_WHILE_FRONT_INTAKING;
                 }
                 break;
 
-            case FEED_INTAKING:
-                if(systemState != SystemSuperState.FEEDING_WHILE_INTAKING)
+            case SHOOT_BACK_INTAKING:
+                if(systemSuperState != SystemSuperState.SHOOTING_WHILE_BACK_INTAKING)
                 {
-                    systemState = SystemSuperState.PREPARING_FEED_WHILE_INTAKING;
+                    systemSuperState = SystemSuperState.PREPARING_SHOOT_WHILE_BACK_INTAKING;
                 }
                 break;
 
-            case PREPARE_SHOOT_INTAKING:
-                systemState = SystemSuperState.PREPARING_SHOOT_WHILE_INTAKING;
+            case SHOOT_DOUBLE_INTAKING:
+                if(systemSuperState != SystemSuperState.SHOOTING_WHILE_DOUBLE_INTAKING)
+                {
+                    systemSuperState = SystemSuperState.PREPARING_SHOOT_WHILE_DOUBLE_INTAKING;
+                }
+                break;
+
+            case FEED_FRONT_INTAKING:
+                if(systemSuperState != SystemSuperState.FEEDING_WHILE_FRONT_INTAKING)
+                {
+                    systemSuperState = SystemSuperState.PREPARING_FEED_WHILE_FRONT_INTAKING;
+                }
+                break;
+
+            case FEED_BACK_INTAKING:
+                if(systemSuperState != SystemSuperState.FEEDING_WHILE_BACK_INTAKING)
+                {
+                    systemSuperState = SystemSuperState.PREPARING_FEED_WHILE_BACK_INTAKING;
+                }
+                break;
+
+            case FEED_DOUBLE_INTAKING:
+                if(systemSuperState != SystemSuperState.FEEDING_WHILE_DOUBLE_INTAKING)
+                {
+                    systemSuperState = SystemSuperState.PREPARING_FEED_WHILE_DOUBLE_INTAKING;
+                }
+                break;
+
+            case PREPARE_SHOOT_FRONT_INTAKING:
+                systemSuperState = SystemSuperState.PREPARING_SHOOT_WHILE_FRONT_INTAKING;
+                break;
+
+            case PREPARE_SHOOT_BACK_INTAKING:
+                systemSuperState = SystemSuperState.PREPARING_SHOOT_WHILE_BACK_INTAKING;
+                break;
+
+            case PREPARE_SHOOT_DOUBLE_INTAKING:
+                systemSuperState = SystemSuperState.PREPARING_SHOOT_WHILE_DOUBLE_INTAKING;
                 break;
 
             default:
                 throw new IllegalStateException("The robot can't be sth he don't know (problem in Superstructure)");
         }
 
-        switch(systemState)
+        switch(systemSuperState)
         {
             case IDLE:
-            case INTAKING:
+            case FRONT_INTAKING:
+            case BACK_INTAKING:
+            case DOUBLE_INTAKING:
             case SHOOTING:
             case FEEDING:
-            case SHOOTING_WHILE_INTAKING:
-            case FEEDING_WHILE_INTAKING:
+            case SHOOTING_WHILE_FRONT_INTAKING:
+            case SHOOTING_WHILE_BACK_INTAKING:
+            case SHOOTING_WHILE_DOUBLE_INTAKING:
+            case FEEDING_WHILE_FRONT_INTAKING:
+            case FEEDING_WHILE_BACK_INTAKING:
+            case FEEDING_WHILE_DOUBLE_INTAKING:
                 break;
 
             case PREPARING_SHOOT:
                 if(shooter.getSystemState() == ShooterSubsystem.SystemState.READY_TO_SHOOT_OPPOSITE_CELL //TODO : correct when better state machine
                     && turret.getSystemState() == TurretSubsystem.SystemState.ALIGNED_WITH_OPPOSITE_CELL
-                    && wantedState == WantedSuperState.SHOOT)
+                    && wantedSuperState == WantedSuperState.SHOOT)
                     {
-                        systemState = SystemSuperState.SHOOTING;
+                        systemSuperState = SystemSuperState.SHOOTING;
                     }
                 break;
 
             case PREPARING_FEED: 
                 if(shooter.getSystemState() == ShooterSubsystem.SystemState.READY_TO_SHOOT_OPPOSITE_CELL //TODO : correct when better state machine
                     && turret.getSystemState() == TurretSubsystem.SystemState.ALIGNED_WITH_OPPOSITE_CELL
-                    && wantedState == WantedSuperState.FEED_ALLIANCE_ZONE)
+                    && wantedSuperState == WantedSuperState.FEED_ALLIANCE_ZONE)
                     {
-                        systemState = SystemSuperState.FEEDING;
+                        systemSuperState = SystemSuperState.FEEDING;
                     }
                 break;
 
-            case PREPARING_SHOOT_WHILE_INTAKING:
+            case PREPARING_SHOOT_WHILE_FRONT_INTAKING:
                 if(shooter.getSystemState() == ShooterSubsystem.SystemState.READY_TO_SHOOT_OPPOSITE_CELL //TODO : correct when better state machine
                     && turret.getSystemState() == TurretSubsystem.SystemState.ALIGNED_WITH_OPPOSITE_CELL
-                    && wantedState == WantedSuperState.SHOOT_INTAKING)
+                    && wantedSuperState == WantedSuperState.SHOOT_FRONT_INTAKING)
                     {
-                        systemState = SystemSuperState.SHOOTING_WHILE_INTAKING;
+                        systemSuperState = SystemSuperState.SHOOTING_WHILE_FRONT_INTAKING;
                     }
                 break;
 
-            case PREPARING_FEED_WHILE_INTAKING:
+            case PREPARING_SHOOT_WHILE_BACK_INTAKING:
                 if(shooter.getSystemState() == ShooterSubsystem.SystemState.READY_TO_SHOOT_OPPOSITE_CELL //TODO : correct when better state machine
                     && turret.getSystemState() == TurretSubsystem.SystemState.ALIGNED_WITH_OPPOSITE_CELL
-                    && wantedState == WantedSuperState.FEED_INTAKING)
+                    && wantedSuperState == WantedSuperState.SHOOT_BACK_INTAKING)
                     {
-                        systemState = SystemSuperState.FEEDING_WHILE_INTAKING;
+                        systemSuperState = SystemSuperState.SHOOTING_WHILE_BACK_INTAKING;
+                    }
+                break;
+
+            case PREPARING_SHOOT_WHILE_DOUBLE_INTAKING:
+                if(shooter.getSystemState() == ShooterSubsystem.SystemState.READY_TO_SHOOT_OPPOSITE_CELL //TODO : correct when better state machine
+                    && turret.getSystemState() == TurretSubsystem.SystemState.ALIGNED_WITH_OPPOSITE_CELL
+                    && wantedSuperState == WantedSuperState.SHOOT_DOUBLE_INTAKING)
+                    {
+                        systemSuperState = SystemSuperState.SHOOTING_WHILE_DOUBLE_INTAKING;
+                    }
+                break;
+
+            case PREPARING_FEED_WHILE_FRONT_INTAKING:
+                if(shooter.getSystemState() == ShooterSubsystem.SystemState.READY_TO_SHOOT_OPPOSITE_CELL //TODO : correct when better state machine
+                    && turret.getSystemState() == TurretSubsystem.SystemState.ALIGNED_WITH_OPPOSITE_CELL
+                    && wantedSuperState == WantedSuperState.FEED_FRONT_INTAKING)
+                    {
+                        systemSuperState = SystemSuperState.FEEDING_WHILE_FRONT_INTAKING;
+                    }
+                break;
+
+            case PREPARING_FEED_WHILE_BACK_INTAKING:
+                if(shooter.getSystemState() == ShooterSubsystem.SystemState.READY_TO_SHOOT_OPPOSITE_CELL //TODO : correct when better state machine
+                    && turret.getSystemState() == TurretSubsystem.SystemState.ALIGNED_WITH_OPPOSITE_CELL
+                    && wantedSuperState == WantedSuperState.FEED_BACK_INTAKING)
+                    {
+                        systemSuperState = SystemSuperState.FEEDING_WHILE_BACK_INTAKING;
+                    }
+                break;
+
+            case PREPARING_FEED_WHILE_DOUBLE_INTAKING:
+                if(shooter.getSystemState() == ShooterSubsystem.SystemState.READY_TO_SHOOT_OPPOSITE_CELL //TODO : correct when better state machine
+                    && turret.getSystemState() == TurretSubsystem.SystemState.ALIGNED_WITH_OPPOSITE_CELL
+                    && wantedSuperState == WantedSuperState.FEED_DOUBLE_INTAKING)
+                    {
+                        systemSuperState = SystemSuperState.FEEDING_WHILE_DOUBLE_INTAKING;
                     }
                 break;
 

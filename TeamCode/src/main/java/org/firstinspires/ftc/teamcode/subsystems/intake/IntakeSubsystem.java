@@ -118,7 +118,7 @@ public class IntakeSubsystem extends SubsystemBase {
         intakeIO.SetPower(frontMotorPower, backMotorPower);
     }
 
-    public void RunStateMachine()
+    private void RunStateMachine()
     {
         switch(wantedState)
         {
